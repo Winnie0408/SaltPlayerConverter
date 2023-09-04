@@ -1,0 +1,40 @@
+import java.util.Scanner;
+
+import SourceAPP.NeteaseCloudMusic;
+
+/**
+ * @description: 欢迎页面，功能入口
+ * @author: HWinZnieJ
+ * @create: 2023-09-04 16:46
+ **/
+
+public class Main {
+    public static void main(String[] args) {
+        while (true) {
+
+            System.out.println("欢迎使用椒盐音乐歌单转换小工具！");
+            System.out.println("\t1. 网易云音乐");
+            System.out.println("\t2. QQ音乐");
+            System.out.println("\t3. 酷狗音乐");
+            System.out.println("\t4. 酷我音乐");
+            System.out.println("\t其他字符. 退出程序");
+            System.out.print("请选择歌单来源(输入数字)：");
+            Scanner scanner = new Scanner(System.in);
+            switch (scanner.next()) {
+                case "1":
+                    new NeteaseCloudMusic().init();
+//                    new aaa().init();
+                    break;
+                case "2":
+//                new QQMusic().init();
+                    break;
+
+                default:
+                    System.exit(0);
+
+            }
+        }
+
+
+    }
+}
