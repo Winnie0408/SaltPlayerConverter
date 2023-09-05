@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-import SourceAPP.NeteaseCloudMusic;
+import SourceAPP.*;
 
 /**
  * @description: 欢迎页面，功能入口
@@ -23,13 +23,13 @@ public class Main {
             switch (scanner.next()) {
                 case "1":
                     new NeteaseCloudMusic().init();
-//                    new aaa().init();
                     break;
                 case "2":
-//                new QQMusic().init();
+//                    new QQMusic().init();
                     break;
 
                 default:
+                    System.out.println("感谢您的使用，再见！");
                     System.exit(0);
 
             }

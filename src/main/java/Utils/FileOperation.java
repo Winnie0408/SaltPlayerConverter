@@ -47,7 +47,8 @@ public class FileOperation {
     public static void checkDir(File file){
         if (file.isDirectory()) {
             if (file.list().length > 0) {
-                Logger.warning("输出目录./Result/CloudMusic不为空！推荐清空目录后再继续！\n清空吗？(y/N) ");
+                Logger.warning("输出目录./Result/CloudMusic不为空！推荐清空目录后再继续！");
+                System.out.print("清空吗？(y/N) ");
                 if (scanner.nextLine().equalsIgnoreCase("y")) {
                     Logger.info("输出目录已清空");
                     deleteSubItem(file);
