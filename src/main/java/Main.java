@@ -25,7 +25,7 @@ public class Main {
                     new NeteaseCloudMusic().init();
                     break;
                 case "2":
-//                    new QQMusic().init();
+                    new QQMusic().init();
                     break;
 
                 default:

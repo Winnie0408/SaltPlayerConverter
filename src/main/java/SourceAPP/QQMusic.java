@@ -16,12 +16,12 @@ import java.sql.Statement;
 import java.util.*;
 
 /**
- * @description: 歌单来源：网易云音乐
+ * @description: 歌单来源：QQ音乐
  * @author: HWinZnieJ
- * @create: 2023-09-04 16:47
+ * @create: 2023-09-06 15:28
  **/
 
-public class NeteaseCloudMusic {
+public class QQMusic {
     Scanner scanner = new Scanner(System.in); //从标准输入获取数据
     Database database = new Database(); //数据库操作
     Connection conn; //数据库连接
@@ -35,11 +35,11 @@ public class NeteaseCloudMusic {
      * 初始化
      */
     public void init() {
-        System.out.println("您选择了源格式为【网易云音乐】的歌单");
+        System.out.println("您选择了源格式为【QQ音乐】的歌单");
         Sleep.start(500);
 
-        FileOperation.createDir(new File("./Result/CloudMusic"));
-        FileOperation.checkDir(new File("./Result/CloudMusic"));
+        FileOperation.createDir(new File("./Result/QQMusic"));
+        FileOperation.checkDir(new File("./Result/QQMusic"));
 
         readTxtFile();
         readDatabase();
@@ -53,16 +53,16 @@ public class NeteaseCloudMusic {
      */
     private void readDatabase() {
         while (true) {
-            System.out.print("请输入网易云音乐数据库文件的绝对路径：");
+            System.out.print("请输入QQ音乐数据库文件的绝对路径：");
             String input = scanner.nextLine();
 
             if (input.isEmpty()) {
-                conn = database.getConnection("cloudmusic.db");
+                conn = database.getConnection("QQMusic");
                 if (conn == null) {
-                    Logger.error("项目SQLite目录内的cloudmusic.db不存在，请检查！");
+                    Logger.error("项目SQLite目录内的QQMusic不存在，请检查！");
                     continue;
                 }
-                Logger.info("使用项目SQLite目录内的cloudmusic.db");
+                Logger.info("使用项目SQLite目录内的QQMusic");
             } else {
                 File path = new File(input);
                 if (!path.exists()) {
@@ -82,11 +82,11 @@ public class NeteaseCloudMusic {
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs;
-            rs = stmt.executeQuery("SELECT * FROM playlist"); // 读取歌单列表
+            rs = stmt.executeQuery("SELECT * FROM User_Folder_table"); // 读取歌单列表
 
             while (rs.next()) {
-                playListId.add(rs.getString("_id")); // 保存歌单ID
-                playListName.add(rs.getString("name")); // 保存歌单名
+                playListId.add(rs.getString("folderid")); // 保存歌单ID
+                playListName.add(rs.getString("foldername")); // 保存歌单名
             }
 
             songNum = new HashMap<>();
@@ -95,14 +95,14 @@ public class NeteaseCloudMusic {
 
             for (int i = 0; i < playListId.size(); i++) {
                 //检查歌单是否包含歌曲
-                if (stmt.executeQuery("SELECT COUNT(*) FROM playlist_track WHERE playlist_id=" + playListId.get(i)).getInt(1) == 0) {
-                    Logger.warning("歌单【" + playListName.get(i) + "】不包含任何歌曲，请您在网易云音乐APP中重新打开该歌单后再试");
+                if (stmt.executeQuery("SELECT COUNT(*) FROM User_Folder_Song_table WHERE folderid=" + playListId.get(i)).getInt(1) == 0) {
+                    Logger.warning("歌单【" + playListName.get(i) + "】不包含任何歌曲，请您在QQ音乐APP中重新打开该歌单后再试");
                     listToBeDelete.add(i);
 //                    playListName.remove(playListName.get(i));
 //                    playListId.remove(playListId.get(i));
                 } else {
                     rs.close();
-                    rs = stmt.executeQuery("SELECT COUNT(*) FROM playlist_track WHERE playlist_id=" + playListId.get(i));
+                    rs = stmt.executeQuery("SELECT COUNT(*) FROM User_Folder_Song_table WHERE folderid=" + playListId.get(i));
                     songNum.put(playListId.get(i), String.valueOf(rs.getInt(1)));
                 }
             }
@@ -153,7 +153,7 @@ public class NeteaseCloudMusic {
         for (int i = 0; i < playListId.size(); i++) {
             System.out.println("\t歌单" + (i + 1) + ". 【" + playListName.get(i) + "】，包含" + songNum.get(playListId.get(i)) + "首歌曲");
         }
-        System.out.println("请结合网易云音乐APP中显示的歌单数据，检查以上歌单信息是否正确");
+        System.out.println("请结合QQ音乐APP中显示的歌单数据，检查以上歌单信息是否正确");
         System.out.print("输入“Y/y”导出全部歌单；\n输入歌单名称前的序号导出所选歌单(可多选，输入示例：1 2 6 7 8 10)；\n输入其他任意字符返回主菜单：");
 
         String input = scanner.nextLine();
@@ -193,15 +193,6 @@ public class NeteaseCloudMusic {
             break;
         }
 
-//        double similarityMaybe; //认定为两个字符串相同的相似度阈值
-//        System.out.print("请输入您认为两个字符串可能相同的相似度阈值(0.0~1.0，默认为0.7)：");
-//        input = scanner.nextLine();
-//        if (input.isEmpty()) {
-//            similarityMaybe = 0.7;
-//        } else {
-//            similarityMaybe = Double.parseDouble(input);
-//        }
-
         Logger.info("开始匹配");
         Sleep.start(300);
         try {
@@ -229,14 +220,13 @@ public class NeteaseCloudMusic {
                 Sleep.start(250);
 
                 //遍历歌单中的所有歌曲
-                rs = stmt.executeQuery("SELECT * FROM playlist_track WHERE playlist_id='" + playListId.get(i) + "'ORDER BY track_order");
+                rs = stmt.executeQuery("SELECT * FROM User_Folder_Song_table WHERE folderid='" + playListId.get(i) + "'ORDER BY position");
                 while (rs.next()) {
-                    String trackId = rs.getString("track_id"); //网易云音乐歌曲ID
-                    rs1 = stmt1.executeQuery("SELECT * FROM track WHERE id=" + trackId); //使用歌曲ID查询歌曲信息
+                    String trackId = rs.getString("id"); //QQ音乐歌曲ID
+                    rs1 = stmt1.executeQuery("SELECT * FROM Song_table WHERE id=" + trackId); //使用歌曲ID查询歌曲信息
                     songName = rs1.getString("name");
-                    songArtist = rs1.getString("artists");
-                    songArtist = JSON.parseObject(songArtist.substring(1, songArtist.length() - 1)).getString("name");
-                    songAlbum = rs1.getString("album_name");
+                    songArtist = rs1.getString("singername");
+                    songAlbum = rs1.getString("albumname");
 
 //                    double nameSimilarity = 0; //歌曲名相似度
 //                    double artistSimilarity = 0; //歌手名相似度
@@ -251,7 +241,7 @@ public class NeteaseCloudMusic {
                     if (selectedPlayListId.isEmpty())
                         System.out.print("总进度：" + (i + 1) + "/" + playListId.size() + "；当前歌单进度：" + (++num) + "/" + songNum.get(playListId.get(i)));
 
-                    File file = new File("./Result/CloudMusic/" + playListName.get(i) + ".txt");
+                    File file = new File("./Result/QQMusic/" + playListName.get(i) + ".txt");
                     //若文件不存在，则创建歌单文件
                     if (!file.exists())
                         file.createNewFile();
@@ -299,7 +289,7 @@ public class NeteaseCloudMusic {
 //                                && songNameMaxKey.equals(songArtistMaxKey) && songNameMaxKey.equals(songAlbumMaxKey)) {
                         //歌曲名、歌手名、专辑名均匹配成功
                         Logger.success("歌曲《" + songName + "》匹配成功！歌手名：" + songArtist + "，专辑名：" + songAlbum);
-                        String[] header = {"类型  ", "本地音乐", "网易云音乐"};
+                        String[] header = {"类型  ", "本地音乐", "QQ音乐"};
                         String[][] data = {{"歌名：", localMusic[Integer.parseInt(songNameMaxKey)][0], songName}, {"歌手：", localMusic[Integer.parseInt(songNameMaxKey)][1], songArtist}, {"专辑：", localMusic[Integer.parseInt(songNameMaxKey)][2], songAlbum}};
                         TablePrinter.printTable(header, data, "匹配详情");
                         matched = true;
@@ -373,11 +363,12 @@ public class NeteaseCloudMusic {
                 } else
                     System.out.println();
             }
-            Logger.success("网易云音乐所有歌单匹配完成，返回主菜单\n");
+            Logger.success("QQ音乐所有歌单匹配完成，返回主菜单\n");
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
     }
+
 
     /**
      * 释放资源
