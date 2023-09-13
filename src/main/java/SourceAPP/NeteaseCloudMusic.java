@@ -236,6 +236,7 @@ public class NeteaseCloudMusic {
                     songName = rs1.getString("name");
                     songArtist = rs1.getString("artists");
                     songArtist = JSON.parseObject(songArtist.substring(1, songArtist.length() - 1)).getString("name");
+                    songArtist = songArtist.replaceAll(" & ", "/");
                     songAlbum = rs1.getString("album_name");
 
 //                    double nameSimilarity = 0; //歌曲名相似度

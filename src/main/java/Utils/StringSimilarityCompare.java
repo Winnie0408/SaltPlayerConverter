@@ -1,7 +1,5 @@
 package Utils;
 
-import java.text.DecimalFormat;
-
 /**
  * @description: 获取两个字符串的相似度
  * @author: HWinZnieJ
@@ -102,7 +100,7 @@ public class StringSimilarityCompare {
      * @return
      */
     private static int compare(String str, String target) {
-        int d[][]; // 矩阵
+        int[][] d; // 矩阵
         int n = str.length();
         int m = target.length();
         int i; // 遍历str的

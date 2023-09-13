@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 public class FileOperation {
     static Scanner scanner = new Scanner(System.in);
+
     /**
      * 删除指定文件夹下的所有文件
      *
@@ -42,12 +43,13 @@ public class FileOperation {
     /**
      * 检测指定目录是否为空：
      * 若不为空，询问用户是否对目录进行清空操作；
+     *
      * @param file
      */
-    public static void checkDir(File file){
+    public static void checkDir(File file) {
         if (file.isDirectory()) {
             if (file.list().length > 0) {
-                Logger.warning("输出目录./Result/CloudMusic不为空！推荐清空目录后再继续！");
+                Logger.warning("输出目录" + (file.getParent() + '/' + file.getName()).replaceAll("\\\\", "/") + "不为空！推荐清空目录后再继续！");
                 System.out.print("清空吗？(y/N) ");
                 if (scanner.nextLine().equalsIgnoreCase("y")) {
                     Logger.info("输出目录已清空");
@@ -58,8 +60,8 @@ public class FileOperation {
             }
         }
     }
-    
-    public static String deleteQuotes(String str){
+
+    public static String deleteQuotes(String str) {
         return str.replaceAll("\"", "");
     }
 }

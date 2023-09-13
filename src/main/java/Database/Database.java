@@ -13,7 +13,6 @@ import java.sql.SQLException;
  **/
 
 public class Database {
-    ;
 
     public Connection getConnection(String dbName) {
         Connection conn = null;

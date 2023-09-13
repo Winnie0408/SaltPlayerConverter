@@ -2,7 +2,6 @@ package SourceAPP;
 
 import Database.Database;
 import Utils.*;
-import com.alibaba.fastjson.JSON;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -35,7 +34,7 @@ public class QQMusic {
      * 初始化
      */
     public void init() {
-        System.out.println("您选择了源格式为【QQ音乐】的歌单");
+        Logger.info("您选择了源格式为【QQ音乐】的歌单");
         Sleep.start(500);
 
         FileOperation.createDir(new File("./Result/QQMusic"));
@@ -179,10 +178,10 @@ public class QQMusic {
     private void start() {
         double similaritySame; //认定为两个字符串相同的相似度阈值
         while (true) {
-            System.out.print("请输入您认为两个字符串相同的相似度阈值(0.0~1.0，默认为0.9)：");
+            System.out.print("请输入您认为两个字符串相同的相似度阈值(0.0~1.0，默认为0.85)：");
             String input = scanner.nextLine();
             if (input.isEmpty()) {
-                similaritySame = 0.9;
+                similaritySame = 0.85;
             } else {
                 if (Double.parseDouble(input) < 0.0 || Double.parseDouble(input) > 1.0) {
                     Logger.warning("输入的相似度阈值不在0.0~1.0之间，请重新输入！");
@@ -226,6 +225,7 @@ public class QQMusic {
                     rs1 = stmt1.executeQuery("SELECT * FROM Song_table WHERE id=" + trackId); //使用歌曲ID查询歌曲信息
                     songName = rs1.getString("name");
                     songArtist = rs1.getString("singername");
+                    songArtist = songArtist.replaceAll(" & ", "/");
                     songAlbum = rs1.getString("albumname");
 
 //                    double nameSimilarity = 0; //歌曲名相似度
@@ -288,9 +288,9 @@ public class QQMusic {
                     if (songNameMaxSimilarity >= similaritySame && songArtistMaxSimilarity >= similaritySame && songAlbumMaxSimilarity >= similaritySame) {
 //                                && songNameMaxKey.equals(songArtistMaxKey) && songNameMaxKey.equals(songAlbumMaxKey)) {
                         //歌曲名、歌手名、专辑名均匹配成功
-                        Logger.success("歌曲《" + songName + "》匹配成功！歌手名：" + songArtist + "，专辑名：" + songAlbum);
-                        String[] header = {"类型  ", "本地音乐", "QQ音乐"};
-                        String[][] data = {{"歌名：", localMusic[Integer.parseInt(songNameMaxKey)][0], songName}, {"歌手：", localMusic[Integer.parseInt(songNameMaxKey)][1], songArtist}, {"专辑：", localMusic[Integer.parseInt(songNameMaxKey)][2], songAlbum}};
+                        Logger.success("第" + (++num) + "首，共" + songNum.get(playListId.get(i)) + "首，歌曲《" + songName + "》匹配成功！歌手名：" + songArtist + "，专辑名：" + songAlbum);
+                        String[] header = {"类型  ", "QQ音乐", "本地音乐", "相似度"};
+                        String[][] data = {{"歌名", songName, localMusic[Integer.parseInt(songNameMaxKey)][0], String.format("%.1f%%", songNameMaxSimilarity * 100)}, {"歌手", songArtist, localMusic[Integer.parseInt(songNameMaxKey)][1], String.format("%.1f%%", songArtistMaxSimilarity * 100)}, {"专辑", songAlbum, localMusic[Integer.parseInt(songNameMaxKey)][2], String.format("%.1f%%", songAlbumMaxSimilarity * 100)}};
                         TablePrinter.printTable(header, data, "匹配详情");
                         matched = true;
                         successNum++;
@@ -319,7 +319,74 @@ public class QQMusic {
                             }*/
                     } else {
                         //歌曲名、歌手名、专辑名中的一或多项匹配失败
-                        Logger.warning("歌曲《" + songName + "》匹配失败！歌手名：" + songArtist + "，专辑名：" + songAlbum);
+                        Logger.warning("第" + (++num) + "首，共" + songNum.get(playListId.get(i)) + "首，歌曲《" + songName + "》匹配失败！歌手：" + songArtist + "，专辑：" + songAlbum);
+
+                        String[] header = {"类型  ", "QQ音乐", "本地音乐", "相似度"};
+                        String[][] data = {{"歌名", songName, localMusic[Integer.parseInt(songNameMaxKey)][0], String.format("%.1f%%", songNameMaxSimilarity * 100)}, {"歌手", songArtist, localMusic[Integer.parseInt(songNameMaxKey)][1], String.format("%.1f%%", songArtistMaxSimilarity * 100)}, {"专辑", songAlbum, localMusic[Integer.parseInt(songNameMaxKey)][2], String.format("%.1f%%", songAlbumMaxSimilarity * 100)}};
+                        TablePrinter.printTable(header, data, "匹配详情");
+                        System.out.println("\tY/y/直接回车：按照表格中的信息添加到歌单");
+                        System.out.println("\tN/n：不添加到歌单");
+                        System.out.println("\t输入歌曲相关信息，自行手动完成匹配");
+                        System.out.print("请选择您的操作：");
+
+                        String input = scanner.nextLine().toLowerCase();
+                        if (input.equals("n")) {
+                            Logger.warning("已跳过");
+                            Sleep.start(250);
+                            continue;
+                        } else if (input.isEmpty() || input.equals("y")) {
+                            Logger.success("已添加到歌单");
+                            Sleep.start(250);
+                            matched = true;
+                            successNum++;
+                            fileWriter.write(localMusic[Integer.parseInt(songNameMaxKey)][3] + "\n");
+                            fileWriter.close();
+                        } else {
+                            while (true) {
+                                String[][] manualSearchResult = FindStringArray.findStringArray(localMusic, input);
+                                for (int j = 0; j < manualSearchResult.length; j++) {
+                                    System.out.println("\t" + (j + 1) + ". " + manualSearchResult[j][0] + " - " + manualSearchResult[j][1] + " - " + manualSearchResult[j][2]);
+                                }
+                                if (manualSearchResult.length == 0) {
+                                    Logger.error("未找到匹配的歌曲，请重新输入！");
+                                    Sleep.start(300);
+                                    System.out.print("请输入歌曲相关信息：");
+                                    input = scanner.nextLine().toLowerCase();
+                                    continue;
+                                }
+                                System.out.print("请选择正确的歌曲序号；或输入N/n退出手动匹配；或重新输入歌曲信息：");
+                                String choice = scanner.nextLine().toLowerCase();
+                                if (choice.matches("[0-9]+")) {
+                                    if (Integer.parseInt(choice) > manualSearchResult.length || Integer.parseInt(choice) < 1) {
+                                        Logger.error("输入错误，请重新输入！");
+                                        continue;
+                                    }
+                                    Logger.success("已添加到歌单");
+                                    Sleep.start(250);
+                                    matched = true;
+                                    successNum++;
+                                    fileWriter.write(manualSearchResult[Integer.parseInt(choice) - 1][3] + "\n");
+                                    fileWriter.close();
+                                    break;
+                                } else if (choice.equals("n")) {
+                                    Logger.warning("已跳过");
+                                    Sleep.start(250);
+                                    break;
+                                }
+//                                else if (choice.equals("r")) {
+//                                    System.out.print("请输入歌曲相关信息：");
+//                                    input = scanner.nextLine().toLowerCase();
+//                                    continue;
+//                                }
+                                else {
+                                    input = choice;
+//                                    Logger.error("输入错误，请重新输入！");
+                                    continue;
+                                }
+                            }
+
+                        }
+
 //                        break;
 //                            //歌曲名、歌手名、专辑名中的一或多项匹配失败
 //                            Logger.warning("检测到转换冲突");

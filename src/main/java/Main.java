@@ -1,6 +1,7 @@
-import java.util.Scanner;
+import SourceAPP.NeteaseCloudMusic;
+import SourceAPP.QQMusic;
 
-import SourceAPP.*;
+import java.util.Scanner;
 
 /**
  * @description: 欢迎页面，功能入口
