@@ -31,8 +31,8 @@ public class TablePrinter {
         int[] columnWidths = new int[numColumns];
         for (int i = 0; i < numColumns; i++) {
             int maxWidth = getDisplayWidth(header[i]);
-            for (int j = 0; j < numRows; j++) {
-                int dataWidth = getDisplayWidth(data[j][i]);
+            for (String[] datum : data) {
+                int dataWidth = getDisplayWidth(datum[i]);
                 if (dataWidth > maxWidth) {
                     maxWidth = dataWidth;
                 }
@@ -81,11 +81,11 @@ public class TablePrinter {
         out.println();
 
         // 输出数据行
-        for (int i = 0; i < numRows; i++) {
+        for (String[] datum : data) {
             out.print(VERTICAL_LINE);
             for (int j = 0; j < numColumns; j++) {
-                out.print(SPACE + data[i][j]);
-                int paddingSize = columnWidths[j] - getDisplayWidth(data[i][j]);
+                out.print(SPACE + datum[j]);
+                int paddingSize = columnWidths[j] - getDisplayWidth(datum[j]);
                 for (int k = 0; k < paddingSize; k++) {
                     out.print(SPACE);
                 }
@@ -110,7 +110,7 @@ public class TablePrinter {
     private static int getDisplayWidth(String s) {
         int width = 0;
         for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) >= '\u4e00' && s.charAt(i) <= '\u9fa5') {
+            if (s.charAt(i) >= '一' && s.charAt(i) <= '龥') {
                 width += 2;
             } else {
                 width++;

@@ -9,9 +9,9 @@ package Utils;
 public class FindStringArray {
     public static String[][] findStringArray(String[][] stringArray, String keyWord) {
         int count = 0;
-        for (int i = 0; i < stringArray.length; i++) {
-            for (int j = 0; j < stringArray[i].length; j++) {
-                if (stringArray[i][j].toLowerCase().contains(keyWord.toLowerCase())) {
+        for (String[] strings : stringArray) {
+            for (String string : strings) {
+                if (string.toLowerCase().contains(keyWord.toLowerCase())) {
                     count++;
                     break; // 如果找到关键词，跳出内部循环
                 }
@@ -19,10 +19,10 @@ public class FindStringArray {
         }
         String[][] result = new String[count][];
         int index = 0;
-        for (int i = 0; i < stringArray.length; i++) {
-            for (int j = 0; j < stringArray[i].length; j++) {
-                if (stringArray[i][j].toLowerCase().contains(keyWord.toLowerCase())) {
-                    result[index] = stringArray[i].clone(); // 复制整行
+        for (String[] strings : stringArray) {
+            for (String string : strings) {
+                if (string.toLowerCase().contains(keyWord.toLowerCase())) {
+                    result[index] = strings.clone(); // 复制整行
                     index++;
                     break; // 如果找到关键词，跳出内部循环
                 }

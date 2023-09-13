@@ -17,8 +17,8 @@ public class MapSort {
      * @return 排序完成后的List
      */
     public static List<Map.Entry<String, Double>> sortByValue(Map<String, Double> map, char order) {
-        List<Map.Entry<String, Double>> entryList2 = new ArrayList<Map.Entry<String, Double>>(map.entrySet());
-        Collections.sort(entryList2, new Comparator<Map.Entry<String, Double>>() {
+        List<Map.Entry<String, Double>> entryList2 = new ArrayList<>(map.entrySet());
+        entryList2.sort(new Comparator<>() {
             @Override
             public int compare(Map.Entry<String, Double> me1, Map.Entry<String, Double> me2) {
                 if (order == 'A') {
@@ -39,8 +39,8 @@ public class MapSort {
      * @return 排序完成后的List
      */
     public static List<Map.Entry<String, Double>> sortByKey(Map<String, Double> map, char order) {
-        List<Map.Entry<String, Double>> entryList1 = new ArrayList<Map.Entry<String, Double>>(map.entrySet());
-        Collections.sort(entryList1, new Comparator<Map.Entry<String, Double>>() {
+        List<Map.Entry<String, Double>> entryList1 = new ArrayList<>(map.entrySet());
+        entryList1.sort(new Comparator<>() {
             @Override
             public int compare(Map.Entry<String, Double> me1, Map.Entry<String, Double> me2) {
                 if (order == 'A') {

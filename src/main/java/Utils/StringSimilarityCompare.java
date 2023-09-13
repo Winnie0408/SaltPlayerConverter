@@ -66,7 +66,7 @@ public class StringSimilarityCompare {
     }
 
     private static String removeSign(String str) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (char item : str.toCharArray()) {
             if (charReg(item)) {
                 sb.append(item);
@@ -143,7 +143,7 @@ public class StringSimilarityCompare {
     }
 
     private static int min(int one, int two, int three) {
-        return (one = one < two ? one : two) < three ? one : three;
+        return (one = Math.min(one, two)) < three ? one : three;
     }
 
     /**

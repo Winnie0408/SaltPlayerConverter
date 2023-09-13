@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @description: 歌单来源：QQ音乐
@@ -153,23 +154,47 @@ public class QQMusic {
             System.out.println("\t歌单" + (i + 1) + ". 【" + playListName.get(i) + "】，包含" + songNum.get(playListId.get(i)) + "首歌曲");
         }
         System.out.println("请结合QQ音乐APP中显示的歌单数据，检查以上歌单信息是否正确");
-        System.out.print("输入“Y/y”导出全部歌单；\n输入歌单名称前的序号导出所选歌单(可多选，输入示例：1 2 6 7 8 10)；\n输入其他任意字符返回主菜单：");
 
-        String input = scanner.nextLine();
-        input = input.toLowerCase();
+        while (true) {
+            System.out.print("\t输入“Y/y”导出全部歌单；\n\t输入歌单名称前的序号导出所选歌单(可多选，输入示例：1 2 6 7 8 10)；\n\t输入其他任意字符返回主菜单：\n请选择：");
+            String input = scanner.nextLine();
+            input = input.toLowerCase();
 
-        if (input.contains(" ")) {
-            Collections.addAll(selectedPlayListId, input.split(" "));
-            selectedPlayListId.add("-1");
-        } else if (input.matches("[0-9]")) {
-            selectedPlayListId.add(input);
-            selectedPlayListId.add("-1");
-        } else if (!input.equals("y")) {
-            Logger.info("返回主菜单");
-            Sleep.start(500);
-            return 1;
+            if (input.contains(" ")) {
+//            String[] parts = input.split(" ");
+//            //将数组转换为List
+//            List<String> list = Arrays.asList(parts);
+//            //对List进行排序
+//            Collections.sort(list);
+//            //将排序后的List转换为数组
+//            selectedPlayListId.addAll(list);
+                // 使用Stream将字符串分割、转换为整数、排序、再转换回字符串
+                selectedPlayListId = Arrays.stream(input.split(" "))
+                        .map(Integer::parseInt)
+                        .sorted()
+                        .map(String::valueOf)
+                        .collect(Collectors.toCollection(LinkedList::new));
+                if (Integer.parseInt(((LinkedList<?>) selectedPlayListId).get(selectedPlayListId.size() - 1).toString()) > playListId.size()) {
+                    Logger.error("输入的歌单序号超出范围，请重新输入！");
+                    Sleep.start(500);
+                    continue;
+                }
+                selectedPlayListId.add("-1");
+            } else if (input.matches("[0-9]+")) {
+                if (Integer.parseInt(input) > playListId.size()) {
+                    Logger.error("输入的歌单序号超出范围，请重新输入！");
+                    Sleep.start(500);
+                    continue;
+                }
+                selectedPlayListId.add(input);
+                selectedPlayListId.add("-1");
+            } else if (!input.equals("y")) {
+                Logger.info("返回主菜单");
+                Sleep.start(500);
+                return 1;
+            }
+            return 0;
         }
-        return 0;
     }
 
     /**
@@ -288,7 +313,7 @@ public class QQMusic {
                     if (songNameMaxSimilarity >= similaritySame && songArtistMaxSimilarity >= similaritySame && songAlbumMaxSimilarity >= similaritySame) {
 //                                && songNameMaxKey.equals(songArtistMaxKey) && songNameMaxKey.equals(songAlbumMaxKey)) {
                         //歌曲名、歌手名、专辑名均匹配成功
-                        Logger.success("第" + (++num) + "首，共" + songNum.get(playListId.get(i)) + "首，歌曲《" + songName + "》匹配成功！歌手名：" + songArtist + "，专辑名：" + songAlbum);
+                        Logger.success("第" + (++num) + "首，共" + songNum.get(playListId.get(i)) + "首，歌曲《" + songName + "》匹配成功！歌手：" + songArtist + "，专辑：" + songAlbum);
                         String[] header = {"类型  ", "QQ音乐", "本地音乐", "相似度"};
                         String[][] data = {{"歌名", songName, localMusic[Integer.parseInt(songNameMaxKey)][0], String.format("%.1f%%", songNameMaxSimilarity * 100)}, {"歌手", songArtist, localMusic[Integer.parseInt(songNameMaxKey)][1], String.format("%.1f%%", songArtistMaxSimilarity * 100)}, {"专辑", songAlbum, localMusic[Integer.parseInt(songNameMaxKey)][2], String.format("%.1f%%", songAlbumMaxSimilarity * 100)}};
                         TablePrinter.printTable(header, data, "匹配详情");
