@@ -1,5 +1,4 @@
-import SourceAPP.NeteaseCloudMusic;
-import SourceAPP.QQMusic;
+import SourceAPP.Universal;
 
 import java.util.Scanner;
 
@@ -22,17 +21,14 @@ public class Main {
             System.out.print("请选择歌单来源(输入数字)：");
             Scanner scanner = new Scanner(System.in);
             switch (scanner.next()) {
-                case "1":
-                    new NeteaseCloudMusic().init();
-                    break;
-                case "2":
-                    new QQMusic().init();
-                    break;
-
-                default:
+                case "1" -> new Universal().init("NeteaseCloudMusic");
+                case "2" -> new Universal().init("QQMusic");
+                case "3" -> new Universal().init("KugouMusic");
+                case "4" -> new Universal().init("KuwoMusic");
+                default -> {
                     System.out.println("感谢您的使用，再见！");
                     System.exit(0);
-
+                }
             }
         }
 
