@@ -1,7 +1,7 @@
-package SourceAPP;
+package converter;
 
-import Database.Database;
-import Utils.*;
+import database.Database;
+import utils.*;
 
 import java.io.File;
 import java.io.FileWriter;

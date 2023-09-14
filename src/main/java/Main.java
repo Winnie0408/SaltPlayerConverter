@@ -1,4 +1,4 @@
-import SourceAPP.Universal;
+import converter.Universal;
 
 import java.util.Scanner;
 

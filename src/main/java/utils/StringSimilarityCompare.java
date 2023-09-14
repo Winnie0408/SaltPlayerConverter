@@ -1,4 +1,4 @@
-package Utils;
+package utils;
 
 /**
  * @description: 获取两个字符串的相似度

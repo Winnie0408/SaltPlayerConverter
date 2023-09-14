@@ -1,7 +1,7 @@
-package SourceAPP;
+package converter;
 
-import Database.Database;
-import Utils.*;
+import database.Database;
+import utils.*;
 import com.alibaba.fastjson.JSON;
 
 import java.io.File;
@@ -17,28 +17,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @description: 歌单来源：统一调用
+ * @description: 歌单来源：网易云音乐
  * @author: HWinZnieJ
- * @create: 2023-09-06 15:28
+ * @create: 2023-09-04 16:47
  **/
 
-public class Universal {
-    private static String SOURCE_ENG; //歌单来源英文名
-    private static String SOURCE_CHN; //歌单来源中文名
-    private static String DATABASE_NAME; //数据库名
-    private static String SONG_LIST_TABLE_NAME; //歌单表名
-    private static String SONG_LIST_ID; //歌单表的歌单ID列名
-    private static String SONG_LIST_NAME; //歌单表的歌单名列名
-    private static String SONG_LIST_SONG_INFO_TABLE_NAME; //歌单歌曲信息表名
-    private static String SONG_LIST_SONG_INFO_PLAYLIST_ID; //歌单歌曲信息表中的歌单ID字段名
-    private static String SONG_LIST_SONG_INFO_SONG_ID; //歌单歌曲信息表中的歌曲ID字段名
-    private static String SONG_INFO_TABLE_NAME; //歌曲信息表名
-    private static String SORT_FIELD; //歌单中歌曲的排序方式
-    private static String SONG_INFO_SONG_ID; //歌曲信息表的歌曲ID字段名
-    private static String SONG_INFO_SONG_NAME; //歌曲信息表的歌曲名字段名
-    private static String SONG_INFO_SONG_ARTIST; //歌曲信息表的歌手名字段名
-    private static String SONG_INFO_SONG_ALBUM; //歌曲信息表的专辑名字段名
-
+public class NeteaseCloudMusic {
     Scanner scanner = new Scanner(System.in); //从标准输入获取数据
     Database database = new Database(); //数据库操作
     Connection conn; //数据库连接
@@ -51,80 +35,12 @@ public class Universal {
     /**
      * 初始化
      */
-    public void init(String sourceApp) {
-        switch (sourceApp) {
-            case "QQMusic" -> {
-                SOURCE_ENG = "QQMusic";
-                SOURCE_CHN = "QQ音乐";
-                DATABASE_NAME = "QQMusic";
-                SONG_LIST_TABLE_NAME = "User_Folder_table";
-                SONG_LIST_ID = "folderid";
-                SONG_LIST_NAME = "foldername";
-                SONG_LIST_SONG_INFO_TABLE_NAME = "User_Folder_Song_table";
-                SONG_LIST_SONG_INFO_PLAYLIST_ID = "folderid";
-                SONG_LIST_SONG_INFO_SONG_ID = "id";
-                SONG_INFO_TABLE_NAME = "Song_table";
-                SORT_FIELD = "position";
-                SONG_INFO_SONG_ID = "id";
-                SONG_INFO_SONG_NAME = "name";
-                SONG_INFO_SONG_ARTIST = "singername";
-                SONG_INFO_SONG_ALBUM = "albumname";
-            }
-            case "NeteaseCloudMusic" -> {
-                SOURCE_ENG = "CloudMusic";
-                SOURCE_CHN = "网易云音乐";
-                DATABASE_NAME = "cloudmusic.db";
-                SONG_LIST_TABLE_NAME = "playlist";
-                SONG_LIST_ID = "_id";
-                SONG_LIST_NAME = "name";
-                SONG_LIST_SONG_INFO_TABLE_NAME = "playlist_track";
-                SONG_LIST_SONG_INFO_PLAYLIST_ID = "playlist_id";
-                SONG_LIST_SONG_INFO_SONG_ID = "track_id";
-                SONG_INFO_TABLE_NAME = "track";
-                SORT_FIELD = "track_order";
-                SONG_INFO_SONG_ID = "id";
-                SONG_INFO_SONG_NAME = "name";
-                SONG_INFO_SONG_ARTIST = "artists";
-                SONG_INFO_SONG_ALBUM = "album_name";
-            }
-            case "KugouMusic" -> {
-                SOURCE_ENG = "";
-                SOURCE_CHN = "";
-                DATABASE_NAME = "";
-                SONG_LIST_TABLE_NAME = "";
-                SONG_LIST_ID = "";
-                SONG_LIST_NAME = "";
-                SONG_LIST_SONG_INFO_TABLE_NAME = "";
-                SONG_LIST_SONG_INFO_PLAYLIST_ID = "";
-                SONG_INFO_TABLE_NAME = "";
-                SORT_FIELD = "";
-                SONG_INFO_SONG_ID = "";
-                SONG_INFO_SONG_NAME = "";
-                SONG_INFO_SONG_ARTIST = "";
-                SONG_INFO_SONG_ALBUM = "";
-            }
-            case "KuwoMusic" -> {
-                SOURCE_ENG = "";
-                SOURCE_CHN = "";
-                DATABASE_NAME = "";
-                SONG_LIST_TABLE_NAME = "";
-                SONG_LIST_ID = "";
-                SONG_LIST_NAME = "";
-                SONG_LIST_SONG_INFO_TABLE_NAME = "";
-                SONG_LIST_SONG_INFO_PLAYLIST_ID = "";
-                SONG_INFO_TABLE_NAME = "";
-                SORT_FIELD = "";
-                SONG_INFO_SONG_ID = "";
-                SONG_INFO_SONG_NAME = "";
-                SONG_INFO_SONG_ARTIST = "";
-                SONG_INFO_SONG_ALBUM = "";
-            }
-        }
-        Logger.info("您选择了源格式为【" + SOURCE_CHN + "】的歌单");
+    public void init() {
+        System.out.println("您选择了源格式为【网易云音乐】的歌单");
         Sleep.start(500);
 
-        FileOperation.createDir(new File("./Result/" + SOURCE_ENG));
-        FileOperation.checkDir(new File("./Result/" + SOURCE_ENG));
+        FileOperation.createDir(new File("./Result/CloudMusic"));
+        FileOperation.checkDir(new File("./Result/CloudMusic"));
 
         readTxtFile();
         readDatabase();
@@ -138,16 +54,16 @@ public class Universal {
      */
     private void readDatabase() {
         while (true) {
-            System.out.print("请输入" + SOURCE_CHN + "数据库文件的绝对路径：");
+            System.out.print("请输入网易云音乐数据库文件的绝对路径：");
             String input = scanner.nextLine();
 
             if (input.isEmpty()) {
-                conn = database.getConnection(DATABASE_NAME);
+                conn = database.getConnection("cloudmusic.db");
                 if (conn == null) {
-                    Logger.error("项目SQLite目录内的" + DATABASE_NAME + "不存在，请检查！");
+                    Logger.error("项目SQLite目录内的cloudmusic.db不存在，请检查！");
                     continue;
                 }
-                Logger.info("使用项目SQLite目录内的" + DATABASE_NAME);
+                Logger.info("使用项目SQLite目录内的cloudmusic.db");
             } else {
                 File path = new File(input);
                 if (!path.exists()) {
@@ -167,11 +83,11 @@ public class Universal {
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs;
-            rs = stmt.executeQuery("SELECT * FROM " + SONG_LIST_TABLE_NAME); // 读取歌单列表
+            rs = stmt.executeQuery("SELECT * FROM playlist"); // 读取歌单列表
 
             while (rs.next()) {
-                playListId.add(rs.getString(SONG_LIST_ID)); // 保存歌单ID
-                playListName.add(rs.getString(SONG_LIST_NAME)); // 保存歌单名
+                playListId.add(rs.getString("_id")); // 保存歌单ID
+                playListName.add(rs.getString("name")); // 保存歌单名
             }
 
             songNum = new HashMap<>();
@@ -180,14 +96,14 @@ public class Universal {
 
             for (int i = 0; i < playListId.size(); i++) {
                 //检查歌单是否包含歌曲
-                if (stmt.executeQuery("SELECT COUNT(*) FROM " + SONG_LIST_SONG_INFO_TABLE_NAME + " WHERE " + SONG_LIST_SONG_INFO_PLAYLIST_ID + "=" + playListId.get(i)).getInt(1) == 0) {
-                    Logger.warning("歌单【" + playListName.get(i) + "】不包含任何歌曲，请您在" + SOURCE_CHN + "APP中重新打开该歌单后再试");
+                if (stmt.executeQuery("SELECT COUNT(*) FROM playlist_track WHERE playlist_id=" + playListId.get(i)).getInt(1) == 0) {
+                    Logger.warning("歌单【" + playListName.get(i) + "】不包含任何歌曲，请您在网易云音乐APP中重新打开该歌单后再试");
                     listToBeDelete.add(i);
 //                    playListName.remove(playListName.get(i));
 //                    playListId.remove(playListId.get(i));
                 } else {
                     rs.close();
-                    rs = stmt.executeQuery("SELECT COUNT(*) FROM " + SONG_LIST_SONG_INFO_TABLE_NAME + " WHERE " + SONG_LIST_SONG_INFO_PLAYLIST_ID + "=" + playListId.get(i));
+                    rs = stmt.executeQuery("SELECT COUNT(*) FROM playlist_track WHERE playlist_id=" + playListId.get(i));
                     songNum.put(playListId.get(i), String.valueOf(rs.getInt(1)));
                 }
             }
@@ -199,8 +115,7 @@ public class Universal {
             }
 
         } catch (SQLException e) {
-            Logger.error("很抱歉！程序运行出现错误，请重试\n错误详情：" + e);
-            return;
+            throw new RuntimeException(e);
         }
     }
 
@@ -239,7 +154,7 @@ public class Universal {
         for (int i = 0; i < playListId.size(); i++) {
             System.out.println("\t歌单" + (i + 1) + ". 【" + playListName.get(i) + "】，包含" + songNum.get(playListId.get(i)) + "首歌曲");
         }
-        System.out.println("请结合" + SOURCE_CHN + "APP中显示的歌单数据，检查以上歌单信息是否正确");
+        System.out.println("请结合网易云音乐APP中显示的歌单数据，检查以上歌单信息是否正确");
 
         while (true) {
             System.out.print("\t输入“Y/y”导出全部歌单；\n\t输入歌单名称前的序号导出所选歌单(可多选，输入示例：1 2 6 7 8 10)；\n\t输入其他任意字符返回主菜单：\n请选择：");
@@ -289,7 +204,7 @@ public class Universal {
     private void start() {
         double similaritySame; //认定为两个字符串相同的相似度阈值
         while (true) {
-            System.out.print("请输入您认为两首歌的信息相同的相似度阈值(0.0~1.0，默认为0.85)：");
+            System.out.print("请输入您认为两个字符串相同的相似度阈值(0.0~1.0，默认为0.85)：");
             String input = scanner.nextLine();
             if (input.isEmpty()) {
                 similaritySame = 0.85;
@@ -302,6 +217,15 @@ public class Universal {
             }
             break;
         }
+
+//        double similarityMaybe; //认定为两个字符串相同的相似度阈值
+//        System.out.print("请输入您认为两个字符串可能相同的相似度阈值(0.0~1.0，默认为0.7)：");
+//        input = scanner.nextLine();
+//        if (input.isEmpty()) {
+//            similarityMaybe = 0.7;
+//        } else {
+//            similarityMaybe = Double.parseDouble(input);
+//        }
 
         Logger.info("开始匹配");
         Sleep.start(300);
@@ -330,17 +254,15 @@ public class Universal {
                 Sleep.start(250);
 
                 //遍历歌单中的所有歌曲
-                rs = stmt.executeQuery("SELECT * FROM " + SONG_LIST_SONG_INFO_TABLE_NAME + " WHERE " + SONG_LIST_SONG_INFO_PLAYLIST_ID + "='" + playListId.get(i) + "'ORDER BY " + SORT_FIELD);
+                rs = stmt.executeQuery("SELECT * FROM playlist_track WHERE playlist_id='" + playListId.get(i) + "'ORDER BY track_order");
                 while (rs.next()) {
-                    String trackId = rs.getString(SONG_LIST_SONG_INFO_SONG_ID); //歌曲ID
-                    rs1 = stmt1.executeQuery("SELECT * FROM " + SONG_INFO_TABLE_NAME + " WHERE " + SONG_INFO_SONG_ID + "=" + trackId); //使用歌曲ID查询歌曲信息
-                    songName = rs1.getString(SONG_INFO_SONG_NAME);
-                    songArtist = rs1.getString(SONG_INFO_SONG_ARTIST);
-                    //网易云音乐歌手名为JSON，需要特殊处理
-                    if (SOURCE_ENG.equals("CloudMusic"))
-                        songArtist = JSON.parseObject(songArtist.substring(1, songArtist.length() - 1)).getString("name");
+                    String trackId = rs.getString("track_id"); //网易云音乐歌曲ID
+                    rs1 = stmt1.executeQuery("SELECT * FROM track WHERE id=" + trackId); //使用歌曲ID查询歌曲信息
+                    songName = rs1.getString("name");
+                    songArtist = rs1.getString("artists");
+                    songArtist = JSON.parseObject(songArtist.substring(1, songArtist.length() - 1)).getString("name");
                     songArtist = songArtist.replaceAll(" & ", "/");
-                    songAlbum = rs1.getString(SONG_INFO_SONG_ALBUM);
+                    songAlbum = rs1.getString("album_name");
 
 //                    double nameSimilarity = 0; //歌曲名相似度
 //                    double artistSimilarity = 0; //歌手名相似度
@@ -355,7 +277,7 @@ public class Universal {
                     if (selectedPlayListId.isEmpty())
                         System.out.print("总进度：" + (i + 1) + "/" + playListId.size() + "；当前歌单进度：" + (++num) + "/" + songNum.get(playListId.get(i)));
 
-                    File file = new File("./Result/" + SOURCE_ENG + "/" + playListName.get(i) + ".txt");
+                    File file = new File("./Result/CloudMusic/" + playListName.get(i) + ".txt");
                     //若文件不存在，则创建歌单文件
                     if (!file.exists())
                         file.createNewFile();
@@ -370,15 +292,8 @@ public class Universal {
                     for (int k = 0; k < localMusic.length; k++) {
                         nameSimilarityArray.put(String.valueOf(k), StringSimilarityCompare.similarityRatio(songName.toLowerCase(), localMusic[k][0].toLowerCase()));
                     }
-//                    List<Map.Entry<String, Double>> sorted = MapSort.sortByValue(nameSimilarityArray, 'D');
                     Map.Entry<String, Double> maxValue = MapSort.getMaxValue(nameSimilarityArray); //获取键值对表中相似度的最大值所在的键值对
                     double songNameMaxSimilarity = maxValue.getValue(); //获取相似度的最大值
-//                    ArrayList<Double> songNameMaxKeys = new ArrayList<>();
-//                    for (int t = 0; true; t++) {
-//                        if (sorted.get(t).getValue() != songNameMaxSimilarity)
-//                            break;
-//                        songNameMaxKeys.add(sorted.get(t).getValue()); //获取相似度的最大值对应的歌曲在localMusic数组中的位置
-//                    }
                     String songNameMaxKey = maxValue.getKey(); //获取相似度的最大值对应的歌曲在localMusic数组中的位置
 
 //                        if (songNameMaxSimilarity >= similarity) {
@@ -410,7 +325,7 @@ public class Universal {
 //                                && songNameMaxKey.equals(songArtistMaxKey) && songNameMaxKey.equals(songAlbumMaxKey)) {
                         //歌曲名、歌手名、专辑名均匹配成功
                         Logger.success("第" + (++num) + "首，共" + songNum.get(playListId.get(i)) + "首，歌曲《" + songName + "》匹配成功！歌手：" + songArtist + "，专辑：" + songAlbum);
-                        String[] header = {"类型  ", SOURCE_CHN, "本地音乐", "相似度"};
+                        String[] header = {"类型  ", "网易云音乐", "本地音乐", "相似度"};
                         String[][] data = {{"歌名", songName, localMusic[Integer.parseInt(songNameMaxKey)][0], String.format("%.1f%%", songNameMaxSimilarity * 100)}, {"歌手", songArtist, localMusic[Integer.parseInt(songNameMaxKey)][1], String.format("%.1f%%", songArtistMaxSimilarity * 100)}, {"专辑", songAlbum, localMusic[Integer.parseInt(songNameMaxKey)][2], String.format("%.1f%%", songAlbumMaxSimilarity * 100)}};
                         TablePrinter.printTable(header, data, "匹配详情");
                         matched = true;
@@ -442,7 +357,7 @@ public class Universal {
                         //歌曲名、歌手名、专辑名中的一或多项匹配失败
                         Logger.warning("第" + (++num) + "首，共" + songNum.get(playListId.get(i)) + "首，歌曲《" + songName + "》匹配失败！歌手：" + songArtist + "，专辑：" + songAlbum);
 
-                        String[] header = {"类型  ", SOURCE_CHN, "本地音乐", "相似度"};
+                        String[] header = {"类型  ", "网易云音乐", "本地音乐", "相似度"};
                         String[][] data = {{"歌名", songName, localMusic[Integer.parseInt(songNameMaxKey)][0], String.format("%.1f%%", songNameMaxSimilarity * 100)}, {"歌手", songArtist, localMusic[Integer.parseInt(songNameMaxKey)][1], String.format("%.1f%%", songArtistMaxSimilarity * 100)}, {"专辑", songAlbum, localMusic[Integer.parseInt(songNameMaxKey)][2], String.format("%.1f%%", songAlbumMaxSimilarity * 100)}};
                         TablePrinter.printTable(header, data, "匹配详情");
                         System.out.println("\tY/y/直接回车：按照表格中的信息添加到歌单");
@@ -551,13 +466,11 @@ public class Universal {
                 } else
                     System.out.println();
             }
-            Logger.success(SOURCE_CHN + "所有歌单匹配完成，返回主菜单\n");
+            Logger.success("网易云音乐所有歌单匹配完成，返回主菜单\n");
         } catch (SQLException | IOException e) {
-            Logger.error("很抱歉！程序运行出现错误，请重试\n错误详情：" + e);
-            return;
+            throw new RuntimeException(e);
         }
     }
-
 
     /**
      * 释放资源
