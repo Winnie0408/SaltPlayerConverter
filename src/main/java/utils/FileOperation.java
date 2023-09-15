@@ -61,6 +61,12 @@ public class FileOperation {
         }
     }
 
+    /**
+     * 删除字符串中的双引号
+     *
+     * @param str 需要删除双引号的字符串
+     * @return 删除结果
+     */
     public static String deleteQuotes(String str) {
         return str.replaceAll("\"", "");
     }

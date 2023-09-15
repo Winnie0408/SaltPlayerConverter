@@ -1,8 +1,8 @@
 package converter;
 
+import com.alibaba.fastjson.JSON;
 import database.Database;
 import utils.*;
-import com.alibaba.fastjson.JSON;
 
 import java.io.File;
 import java.io.FileWriter;

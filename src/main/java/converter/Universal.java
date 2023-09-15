@@ -1,8 +1,8 @@
 package converter;
 
+import com.alibaba.fastjson.JSON;
 import database.Database;
 import utils.*;
-import com.alibaba.fastjson.JSON;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -47,6 +47,7 @@ public class Universal {
     ArrayList<String> playListName = new ArrayList<>(); //存放歌单名
     Map<String, String> songNum; //存放某ID所对应歌单中的歌曲数量 [歌单ID][歌曲数量]
     Queue<String> selectedPlayListId = new LinkedList<>(); //存放用户选择的歌单序号
+    Properties prop; //存放配置文件
 
     /**
      * 初始化
@@ -123,6 +124,9 @@ public class Universal {
         Logger.info("您选择了源格式为【" + SOURCE_CHN + "】的歌单");
         Sleep.start(500);
 
+        //读取配置文件
+        prop = PropertiesRelated.read();
+
         FileOperation.createDir(new File("./Result/" + SOURCE_ENG));
         FileOperation.checkDir(new File("./Result/" + SOURCE_ENG));
 
@@ -138,16 +142,19 @@ public class Universal {
      */
     private void readDatabase() {
         while (true) {
+            if (prop.getProperty("databasePath") != null) {
+                System.out.println("\t直接回车使用上次输入的路径【" + prop.getProperty("databasePath") + "】");
+            }
             System.out.print("请输入" + SOURCE_CHN + "数据库文件的绝对路径：");
             String input = scanner.nextLine();
 
-            if (input.isEmpty()) {
+            if (input.isEmpty() && prop.getProperty("databasePath") == null) {
                 conn = database.getConnection(DATABASE_NAME);
                 if (conn == null) {
                     Logger.error("项目SQLite目录内的" + DATABASE_NAME + "不存在，请检查！");
                     continue;
                 }
-                Logger.info("使用项目SQLite目录内的" + DATABASE_NAME);
+                Logger.info("使用项目SQLite目录内的" + DATABASE_NAME + "文件");
             } else {
                 File path = new File(input);
                 if (!path.exists()) {
@@ -160,9 +167,13 @@ public class Universal {
                     continue;
                 }
                 Logger.info("使用指定路径" + input + "的数据库文件");
+                PropertiesRelated.save("databasePath", input);
+                if (!input.isEmpty())
+                    Logger.success("已将您本次输入的路径保存至配置文件");
             }
             break;
         }
+        Sleep.start(300);
 
         try {
             Statement stmt = conn.createStatement();
@@ -200,7 +211,6 @@ public class Universal {
 
         } catch (SQLException e) {
             Logger.error("很抱歉！程序运行出现错误，请重试\n错误详情：" + e);
-            return;
         }
     }
 
@@ -208,9 +218,17 @@ public class Universal {
      * 读取歌单txt文件
      */
     private void readTxtFile() {
+        boolean readFromConfig = false; //是否从配置文件中读取路径
         while (true) {
+            if (prop.getProperty("musicOutputPath") != null) {
+                System.out.println("\t直接回车使用上次输入的路径【" + prop.getProperty("musicOutputPath") + "】");
+            }
             System.out.print("请输入手机导出的“本地音乐导出.txt”文件绝对路径：");
             String input = scanner.nextLine();
+            if (input.isEmpty() && prop.getProperty("musicOutputPath") != null) {
+                input = prop.getProperty("musicOutputPath");
+                readFromConfig = true;
+            }
             input = FileOperation.deleteQuotes(input);
             try {
                 String[] localMusicFile = Files.readString(Paths.get(input)).split("\n");
@@ -223,6 +241,10 @@ public class Universal {
                     localMusic[a][3] = i.split("#\\*#")[3];
                     a++;
                 }
+                PropertiesRelated.save("musicOutputPath", input);
+                Logger.success("文件解析成功");
+                if (!readFromConfig)
+                    Logger.success("已将您本次输入的路径保存至配置文件");
                 break;
             } catch (Exception e) {
                 Logger.error("无法读取指定路径【" + input + "】的文件，请检查！错误信息：" + e);
@@ -303,6 +325,37 @@ public class Universal {
             break;
         }
 
+        boolean parenthesesRemoval = false; //是否启用括号内内容去除
+        if (prop.getProperty("parenthesesRemoval") != null) {
+            if (prop.getProperty("parenthesesRemoval").equals("true")) {
+                Logger.info("您已在配置文件中【启用】括号去除");
+                Sleep.start(500);
+                parenthesesRemoval = true;
+            } else if (prop.getProperty("parenthesesRemoval").equals("false")) {
+                Logger.info("您已在配置文件中【禁用】括号去除");
+                Sleep.start(500);
+                parenthesesRemoval = false;
+            }
+        } else {
+            while (true) {
+                System.out.print("是否启用括号去除？启用此功能（应该）可以大幅提升非中文歌曲的识别正确率 (y/N)：");
+                String input = scanner.nextLine();
+                if (input.equalsIgnoreCase("y")) {
+                    parenthesesRemoval = true;
+                    PropertiesRelated.save("parenthesesRemoval", "true");
+                    Logger.success("已将您的选择保存至配置文件");
+                } else if (input.equalsIgnoreCase("n")) {
+                    parenthesesRemoval = false;
+                    PropertiesRelated.save("parenthesesRemoval", "false");
+                    Logger.success("已将您的选择保存至配置文件");
+                } else {
+                    Logger.warning("输入有误，请重新输入！");
+                    continue;
+                }
+                break;
+            }
+        }
+
         Logger.info("开始匹配");
         Sleep.start(300);
         try {
@@ -327,7 +380,7 @@ public class Universal {
                 int successNum = 0;
 
                 Logger.info("======正在匹配歌单【" + playListName.get(i) + "】======");
-                Sleep.start(250);
+                Sleep.start(300);
 
                 //遍历歌单中的所有歌曲
                 rs = stmt.executeQuery("SELECT * FROM " + SONG_LIST_SONG_INFO_TABLE_NAME + " WHERE " + SONG_LIST_SONG_INFO_PLAYLIST_ID + "='" + playListId.get(i) + "'ORDER BY " + SORT_FIELD);
@@ -336,11 +389,17 @@ public class Universal {
                     rs1 = stmt1.executeQuery("SELECT * FROM " + SONG_INFO_TABLE_NAME + " WHERE " + SONG_INFO_SONG_ID + "=" + trackId); //使用歌曲ID查询歌曲信息
                     songName = rs1.getString(SONG_INFO_SONG_NAME);
                     songArtist = rs1.getString(SONG_INFO_SONG_ARTIST);
-                    //网易云音乐歌手名为JSON，需要特殊处理
+                    //网易云音乐歌手名为JSON格式，需要特殊处理
                     if (SOURCE_ENG.equals("CloudMusic"))
                         songArtist = JSON.parseObject(songArtist.substring(1, songArtist.length() - 1)).getString("name");
                     songArtist = songArtist.replaceAll(" & ", "/");
                     songAlbum = rs1.getString(SONG_INFO_SONG_ALBUM);
+
+//                    if (parenthesesRemoval) {
+//                        songName = songName.replaceAll("(?i) ?\\((?!inst|[^()]* Ver\\.)[^)]*\\) ?", "");
+//                        songArtist = songArtist.replaceAll("(?i) ?\\((?!inst|[^()]* Ver\\.)[^)]*\\) ?", "");
+//                        songAlbum = songAlbum.replaceAll("(?i) ?\\((?!inst|[^()]* Ver\\.)[^)]*\\) ?", "");
+//                    }
 
 //                    double nameSimilarity = 0; //歌曲名相似度
 //                    double artistSimilarity = 0; //歌手名相似度
@@ -367,18 +426,17 @@ public class Universal {
 //                        localMusic[j][0] = localMusic[j][0].replace("*", "\\*"); //预防后续代码将*识别为正则表达式
 
                     //获取歌曲名相似度列表
-                    for (int k = 0; k < localMusic.length; k++) {
-                        nameSimilarityArray.put(String.valueOf(k), StringSimilarityCompare.similarityRatio(songName.toLowerCase(), localMusic[k][0].toLowerCase()));
-                    }
-//                    List<Map.Entry<String, Double>> sorted = MapSort.sortByValue(nameSimilarityArray, 'D');
+                    if (parenthesesRemoval)
+                        for (int k = 0; k < localMusic.length; k++) {
+                            nameSimilarityArray.put(String.valueOf(k), StringSimilarityCompare.similarityRatio(songName.replaceAll("(?i) ?\\((?!inst|[^()]* Ver\\.)[^)]*\\) ?", "").toLowerCase(), localMusic[k][0].replaceAll("(?i) ?\\((?!inst|[^()]* Ver\\.)[^)]*\\) ?", "").toLowerCase()));
+                        }
+                    else
+                        for (int k = 0; k < localMusic.length; k++) {
+                            nameSimilarityArray.put(String.valueOf(k), StringSimilarityCompare.similarityRatio(songName.toLowerCase(), localMusic[k][0].toLowerCase()));
+                        }
+
                     Map.Entry<String, Double> maxValue = MapSort.getMaxValue(nameSimilarityArray); //获取键值对表中相似度的最大值所在的键值对
                     double songNameMaxSimilarity = maxValue.getValue(); //获取相似度的最大值
-//                    ArrayList<Double> songNameMaxKeys = new ArrayList<>();
-//                    for (int t = 0; true; t++) {
-//                        if (sorted.get(t).getValue() != songNameMaxSimilarity)
-//                            break;
-//                        songNameMaxKeys.add(sorted.get(t).getValue()); //获取相似度的最大值对应的歌曲在localMusic数组中的位置
-//                    }
                     String songNameMaxKey = maxValue.getKey(); //获取相似度的最大值对应的歌曲在localMusic数组中的位置
 
 //                        if (songNameMaxSimilarity >= similarity) {
@@ -386,9 +444,14 @@ public class Universal {
 //                        localMusic[j][1] = localMusic[j][1].replace("*", "\\*");
 
                     //获取歌手名相似度列表
-                    for (int k = 0; k < localMusic.length; k++) {
-                        artistSimilarityArray.put(String.valueOf(k), StringSimilarityCompare.similarityRatio(songArtist.toLowerCase(), localMusic[k][1].toLowerCase()));
-                    }
+                    if (parenthesesRemoval)
+                        for (int k = 0; k < localMusic.length; k++) {
+                            artistSimilarityArray.put(String.valueOf(k), StringSimilarityCompare.similarityRatio(songArtist.replaceAll("(?i) ?\\((?!inst|[^()]* Ver\\.)[^)]*\\) ?", "").toLowerCase(), localMusic[k][1].replaceAll("(?i) ?\\((?!inst|[^()]* Ver\\.)[^)]*\\) ?", "").toLowerCase()));
+                        }
+                    else
+                        for (int k = 0; k < localMusic.length; k++) {
+                            artistSimilarityArray.put(String.valueOf(k), StringSimilarityCompare.similarityRatio(songArtist.toLowerCase(), localMusic[k][1].toLowerCase()));
+                        }
                     maxValue = MapSort.getMaxValue(artistSimilarityArray); //获取键值对表中相似度的最大值所在的键值对
                     double songArtistMaxSimilarity = maxValue.getValue(); //获取相似度的最大值
                     String songArtistMaxKey = maxValue.getKey(); //获取相似度的最大值对应的歌手名
@@ -398,9 +461,14 @@ public class Universal {
 //                        localMusic[j][2] = localMusic[j][2].replace("*", "\\*");
 
                     //获取专辑名相似度列表
-                    for (int k = 0; k < localMusic.length; k++) {
-                        albumSimilarityArray.put(String.valueOf(k), StringSimilarityCompare.similarityRatio(songAlbum.toLowerCase(), localMusic[k][2].toLowerCase()));
-                    }
+                    if (parenthesesRemoval)
+                        for (int k = 0; k < localMusic.length; k++) {
+                            albumSimilarityArray.put(String.valueOf(k), StringSimilarityCompare.similarityRatio(songAlbum.replaceAll("(?i) ?\\((?!inst|[^()]* Ver\\.)[^)]*\\) ?", "").toLowerCase(), localMusic[k][2].replaceAll("(?i) ?\\((?!inst|[^()]* Ver\\.)[^)]*\\) ?", "").toLowerCase()));
+                        }
+                    else
+                        for (int k = 0; k < localMusic.length; k++) {
+                            albumSimilarityArray.put(String.valueOf(k), StringSimilarityCompare.similarityRatio(songAlbum.toLowerCase(), localMusic[k][2].toLowerCase()));
+                        }
                     maxValue = MapSort.getMaxValue(albumSimilarityArray); //获取键值对表中相似度的最大值所在的键值对
                     double songAlbumMaxSimilarity = maxValue.getValue(); //获取相似度的最大值
                     String songAlbumMaxKey = maxValue.getKey(); //获取相似度的最大值对应的专辑名
@@ -453,11 +521,11 @@ public class Universal {
                         String input = scanner.nextLine().toLowerCase();
                         if (input.equals("n")) {
                             Logger.warning("已跳过");
-                            Sleep.start(250);
+                            Sleep.start(300);
                             continue;
                         } else if (input.isEmpty() || input.equals("y")) {
                             Logger.success("已添加到歌单");
-                            Sleep.start(250);
+                            Sleep.start(300);
                             matched = true;
                             successNum++;
                             fileWriter.write(localMusic[Integer.parseInt(songNameMaxKey)][3] + "\n");
@@ -483,7 +551,7 @@ public class Universal {
                                         continue;
                                     }
                                     Logger.success("已添加到歌单");
-                                    Sleep.start(250);
+                                    Sleep.start(300);
                                     matched = true;
                                     successNum++;
                                     fileWriter.write(manualSearchResult[Integer.parseInt(choice) - 1][3] + "\n");
@@ -491,7 +559,7 @@ public class Universal {
                                     break;
                                 } else if (choice.equals("n")) {
                                     Logger.warning("已跳过");
-                                    Sleep.start(250);
+                                    Sleep.start(300);
                                     break;
                                 }
 //                                else if (choice.equals("r")) {
@@ -554,7 +622,6 @@ public class Universal {
             Logger.success(SOURCE_CHN + "所有歌单匹配完成，返回主菜单\n");
         } catch (SQLException | IOException e) {
             Logger.error("很抱歉！程序运行出现错误，请重试\n错误详情：" + e);
-            return;
         }
     }
 

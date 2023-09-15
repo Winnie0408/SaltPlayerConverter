@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * @create: 2023-09-06 15:28
  **/
 
-public class QQMusic {
+public class QqMusic {
     Scanner scanner = new Scanner(System.in); //从标准输入获取数据
     Database database = new Database(); //数据库操作
     Connection conn; //数据库连接

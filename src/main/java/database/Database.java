@@ -19,7 +19,7 @@ public class Database {
         try {
             String url = "jdbc:sqlite:SQLite/" + dbName;
             conn = DriverManager.getConnection(url);
-            Logger.info("成功连接SQLite数据库");
+            Logger.success("成功连接SQLite数据库");
         } catch (SQLException e) {
             Logger.error(e.getMessage());
         }
@@ -29,7 +29,7 @@ public class Database {
     public void closeConnection(Connection conn) {
         try {
             conn.close();
-            Logger.info("成功连断开SQLite数据库");
+            Logger.success("成功断开SQLite数据库");
         } catch (SQLException e) {
             Logger.error(e.getMessage());
         }
