@@ -104,7 +104,6 @@ public class TablePrinter {
             out.print(HORIZONTAL_LINE + CROSS_LINE);
         }
         out.println();
-        out.println();
     }
 
     private static int getDisplayWidth(String s) {

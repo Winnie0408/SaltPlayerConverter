@@ -50,12 +50,19 @@ public class FileOperation {
         if (file.isDirectory()) {
             if (file.list().length > 0) {
                 Logger.warning("输出目录" + (file.getParent() + '/' + file.getName()).replaceAll("\\\\", "/") + "不为空！推荐清空目录后再继续！");
-                System.out.print("清空吗？(y/N) ");
-                if (scanner.nextLine().equalsIgnoreCase("y")) {
-                    Logger.info("输出目录已清空");
-                    deleteSubItem(file);
-                } else {
-                    Logger.info("您已取消清空操作");
+                while (true) {
+                    System.out.print("清空吗？(Y/n) ");
+                    String choice = scanner.nextLine();
+                    if (choice.isEmpty() || choice.equalsIgnoreCase("y")) {
+                        Logger.info("输出目录已清空");
+                        deleteSubItem(file);
+                        break;
+                    } else if (choice.equalsIgnoreCase("n")) {
+                        Logger.info("清空操作已取消");
+                        break;
+                    } else {
+                        Logger.warning("输入有误，请重新输入！");
+                    }
                 }
             }
         }

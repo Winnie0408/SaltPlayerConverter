@@ -21,7 +21,7 @@ public class Database {
             conn = DriverManager.getConnection(url);
             Logger.success("成功连接SQLite数据库");
         } catch (SQLException e) {
-            Logger.error(e.getMessage());
+            Logger.error("数据库连接失败！\n错误详情：" + e.getMessage());
         }
         return conn;
     }
@@ -31,7 +31,7 @@ public class Database {
             conn.close();
             Logger.success("成功断开SQLite数据库");
         } catch (SQLException e) {
-            Logger.error(e.getMessage());
+            Logger.error("数据库断开失败！\n错误详情：" + e.getMessage());
         }
     }
 }

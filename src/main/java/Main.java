@@ -21,7 +21,7 @@ public class Main {
             System.out.print("请选择歌单来源(输入数字)：");
             Scanner scanner = new Scanner(System.in);
             switch (scanner.next()) {
-                case "1" -> new Universal().init("NeteaseCloudMusic");
+                case "1" -> new Universal().init("CloudMusic");
                 case "2" -> new Universal().init("QQMusic");
                 case "3" -> new Universal().init("KugouMusic");
                 case "4" -> new Universal().init("KuwoMusic");
