@@ -1,4 +1,5 @@
 import converter.Universal;
+import utils.MarkdownLog;
 
 import java.util.Scanner;
 
@@ -10,9 +11,10 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        while (true) {
 
-            System.out.println("欢迎使用椒盐音乐歌单转换小工具！");
+        System.out.println("欢迎使用椒盐音乐歌单转换小工具！");
+        MarkdownLog.checkLogFile();
+        while (true) {
             System.out.println("\t1. 网易云音乐");
             System.out.println("\t2. QQ音乐");
             System.out.println("\t3. 酷狗音乐");
@@ -31,7 +33,6 @@ public class Main {
                 }
             }
         }
-
 
     }
 }

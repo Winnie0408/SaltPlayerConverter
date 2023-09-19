@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,6 +49,8 @@ public class Universal {
     Map<String, String> songNum; //存放某ID所对应歌单中的歌曲数量 [歌单ID][歌曲数量]
     Queue<String> selectedPlayListId = new LinkedList<>(); //存放用户选择的歌单序号
     Properties prop; //存放配置文件
+    Date date;
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /**
      * 初始化
@@ -372,14 +375,14 @@ public class Universal {
                 String input = scanner.nextLine();
                 if (input.equalsIgnoreCase("y")) {
                     parenthesesRemoval = true;
-                    PropertiesRelated.save("parenthesesRemoval", "true");
+//                    PropertiesRelated.save("parenthesesRemoval", "true");
                     Logger.info("已启用括号去除");
-                    Logger.success("已将您的选择保存至配置文件");
+//                    Logger.success("已将您的选择保存至配置文件");
                 } else if (input.equalsIgnoreCase("n") || input.isEmpty()) {
                     parenthesesRemoval = false;
-                    PropertiesRelated.save("parenthesesRemoval", "false");
+//                    PropertiesRelated.save("parenthesesRemoval", "false");
                     Logger.info("已禁用括号去除");
-                    Logger.success("已将您的选择保存至配置文件");
+//                    Logger.success("已将您的选择保存至配置文件");
                 } else {
                     Logger.warning("输入有误，请重新输入！");
                     continue;
@@ -413,6 +416,9 @@ public class Universal {
                 int successNum = 0;
 
                 Logger.info("======正在匹配歌单【" + playListName.get(i) + "】======");
+                date = new Date();
+                MarkdownLog.date(dateFormat.format(date));
+                MarkdownLog.playListTitle(playListName.get(i));
                 Sleep.start(300);
 
                 boolean disableAlbumNameMatch = false; //是否禁用专辑名称匹配
@@ -553,13 +559,14 @@ public class Universal {
 //                                && songNameMaxKey.equals(songArtistMaxKey) && songNameMaxKey.equals(songAlbumMaxKey)) {
                         //歌曲名、歌手名、专辑名均匹配成功
                         Logger.success("第" + (++num) + "首，共" + songNum.get(playListId.get(i)) + "首，歌曲《" + songName + "》匹配成功！歌手：" + songArtist + "，专辑：" + songAlbum);
-                        String[] header = {"类型  ", SOURCE_CHN, "本地音乐", "相似度"};
+                        String[] header = {"类型", SOURCE_CHN, "本地音乐", "相似度"};
                         String[][] data = {{"歌名", songName, localMusic[Integer.parseInt(songNameMaxKey)][0], String.format("%.1f%%", songNameMaxSimilarity * 100)}, {"歌手", songArtist, localMusic[Integer.parseInt(songNameMaxKey)][1], String.format("%.1f%%", songArtistMaxSimilarity * 100)}, {"专辑", songAlbum, localMusic[Integer.parseInt(songNameMaxKey)][2], String.format("%.1f%%", songAlbumMaxSimilarity * 100)}};
                         TablePrinter.printTable(header, data, "匹配详情");
                         matched = true;
                         successNum++;
                         fileWriter.write(localMusic[Integer.parseInt(songNameMaxKey)][3] + "\n");
                         fileWriter.close();
+                        MarkdownLog.succeedConvertResult(header, data, num, songNum.get(playListId.get(i)));
 //                        break;
                         /*} else if (songNameMaxSimilarity >= similaritySame && (songArtistMaxSimilarity >= similarityMaybe || songAlbumMaxSimilarity >= similarityMaybe)) {
 //                            //歌曲名相同，歌手名、专辑名中的一或多项相似，给用户判断是否添加到列表
@@ -585,7 +592,7 @@ public class Universal {
                         //歌曲名、歌手名、专辑名中的一或多项匹配失败
                         Logger.warning("第" + (++num) + "首，共" + songNum.get(playListId.get(i)) + "首，歌曲《" + songName + "》匹配失败！歌手：" + songArtist + "，专辑：" + songAlbum);
 
-                        String[] header = {"类型  ", SOURCE_CHN, "本地音乐", "相似度"};
+                        String[] header = {"类型", SOURCE_CHN, "本地音乐", "相似度"};
                         String[][] data = {{"歌名", songName, localMusic[Integer.parseInt(songNameMaxKey)][0], String.format("%.1f%%", songNameMaxSimilarity * 100)}, {"歌手", songArtist, localMusic[Integer.parseInt(songNameMaxKey)][1], String.format("%.1f%%", songArtistMaxSimilarity * 100)}, {"专辑", songAlbum, localMusic[Integer.parseInt(songNameMaxKey)][2], String.format("%.1f%%", songAlbumMaxSimilarity * 100)}};
                         TablePrinter.printTable(header, data, "匹配详情");
                         String input;
@@ -602,16 +609,19 @@ public class Universal {
                         } else {
                             input = "n";
                             Logger.warning("使用默认操作：不添加到歌单");
+                            MarkdownLog.failedConvertResult(songName, songArtist, songAlbum, num, songNum.get(playListId.get(i)));
                         }
 
                         if (input.endsWith("n")) {
                             if (!allNo) {
                                 Logger.warning("已跳过");
+                                MarkdownLog.failedConvertResult(songName, songArtist, songAlbum, num, songNum.get(playListId.get(i)));
                                 Sleep.start(300);
                             }
                             if (input.startsWith("a")) {
                                 allNo = true;
                                 Logger.info("当前歌单的所有后续歌曲，遇到转换冲突时将默认跳过，不添加到歌单");
+                                MarkdownLog.info("======默认跳过已启用======");
                                 Sleep.start(1000);
                             }
                             continue;
@@ -623,6 +633,7 @@ public class Universal {
                             if (input.startsWith("a")) {
                                 allYes = true;
                                 Logger.info("当前歌单的所有后续歌曲，遇到转换冲突时将默认添加到歌单");
+                                MarkdownLog.info("======默认添加已启用======");
                                 Sleep.start(1000);
                             }
 
@@ -630,6 +641,7 @@ public class Universal {
                             successNum++;
                             fileWriter.write(localMusic[Integer.parseInt(songNameMaxKey)][3] + "\n");
                             fileWriter.close();
+                            MarkdownLog.succeedConvertResult(header, data, num, songNum.get(playListId.get(i)));
                         } else {
                             while (true) {
                                 String[][] manualSearchResult = FindStringArray.findStringArray(localMusic, input);
@@ -651,14 +663,17 @@ public class Universal {
                                         continue;
                                     }
                                     Logger.success("已添加到歌单");
-                                    Sleep.start(300);
                                     matched = true;
                                     successNum++;
                                     fileWriter.write(manualSearchResult[Integer.parseInt(choice) - 1][3] + "\n");
                                     fileWriter.close();
+                                    data = new String[][]{{"歌名", songName, manualSearchResult[Integer.parseInt(choice) - 1][0], "手动匹配"}, {"歌手", songArtist, manualSearchResult[Integer.parseInt(choice) - 1][1], "手动匹配"}, {"专辑", songAlbum, manualSearchResult[Integer.parseInt(choice) - 1][2], "手动匹配"}};
+                                    MarkdownLog.succeedConvertResult(header, data, num, songNum.get(playListId.get(i)));
+                                    Sleep.start(300);
                                     break;
                                 } else if (choice.equals("n")) {
                                     Logger.warning("已跳过");
+                                    MarkdownLog.failedConvertResult(songName, songArtist, songAlbum, num, songNum.get(playListId.get(i)));
                                     Sleep.start(300);
                                     break;
                                 }
