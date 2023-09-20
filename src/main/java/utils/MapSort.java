@@ -15,7 +15,7 @@ public class MapSort {
     /**
      * 对Map类型的数据根据值(Value)进行排序
      *
-     * @param map
+     * @param map  要计算的Map集合
      * @param order A:升序 D:降序
      * @return 排序完成后的List
      */
@@ -37,7 +37,7 @@ public class MapSort {
     /**
      * 对Map类型的数据根据键(Key)进行排序
      *
-     * @param map
+     * @param map 要计算的Map集合
      * @param order A:升序 D:降序
      * @return 排序完成后的List
      */
@@ -59,8 +59,8 @@ public class MapSort {
     /**
      * 获取Map中Value最大的键值对
      *
-     * @param map
-     * @return
+     * @param map 要计算的Map集合
+     * @return Map.Entry<String, Double> 集合中最大值(Value)的键值对
      */
     public static Map.Entry<String, Double> getMaxValue(Map<String, Double> map) {
         Map.Entry<String, Double> maxEntry = null;
@@ -75,8 +75,8 @@ public class MapSort {
     /**
      * 获取Map中Value最小的键值对
      *
-     * @param map
-     * @return
+     * @param map 要计算的Map集合
+     * @return Map.Entry<String, Double> 集合中最小值(Value)的键值对
      */
     public static Map.Entry<String, Double> getMinValue(Map<String, Double> map) {
         Map.Entry<String, Double> minEntry = null;

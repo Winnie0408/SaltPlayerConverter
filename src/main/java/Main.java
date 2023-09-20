@@ -1,5 +1,6 @@
 import converter.Universal;
 import utils.MarkdownLog;
+import utils.Statistic;
 
 import java.util.Scanner;
 
@@ -12,15 +13,18 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 
+        Statistic.saveUuid();
+
         System.out.println("欢迎使用椒盐音乐歌单转换小工具！");
         MarkdownLog.checkLogFile();
         while (true) {
-            System.out.println("\t1. 网易云音乐");
-            System.out.println("\t2. QQ音乐");
-            System.out.println("\t3. 酷狗音乐");
-            System.out.println("\t4. 酷我音乐");
-            System.out.println("\t其他字符. 退出程序");
-            System.out.print("请选择歌单来源(输入数字)：");
+            System.out.print("""
+                    \t1. 网易云音乐
+                    \t2. QQ音乐
+                    \t3. 酷狗音乐
+                    \t4. 酷我音乐
+                    \t其他字符. 退出程序
+                    请选择歌单来源(输入数字)：""");
             Scanner scanner = new Scanner(System.in);
             switch (scanner.next()) {
                 case "1" -> new Universal().init("CloudMusic");

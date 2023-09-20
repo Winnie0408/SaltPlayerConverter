@@ -11,20 +11,28 @@ import java.util.Properties;
  **/
 
 public class PropertiesRelated {
-    public static boolean save(String key, String value) {
+    /**
+     * 保存properties配置到配置文件
+     *
+     * @param key   键名
+     * @param value 键值
+     */
+    public static void save(String key, String value) {
         Properties prop = PropertiesRelated.read();
         prop.setProperty(key, value);
         try {
             FileOutputStream fos = new FileOutputStream("./config.properties");
             OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
             prop.store(osw, null);
-            return true;
         } catch (IOException e) {
             Logger.error("无法写入配置文件！\n错误详情：" + e);
-            return false;
         }
     }
 
+    /**
+     * 读取配置文件
+     * @return 包含配置信息的Properties类
+     */
     public static Properties read() {
         File file = new File("./config.properties");
         if (file.exists()) {

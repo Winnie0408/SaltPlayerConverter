@@ -360,9 +360,10 @@ public class NeteaseCloudMusic {
                         String[] header = {"类型  ", "网易云音乐", "本地音乐", "相似度"};
                         String[][] data = {{"歌名", songName, localMusic[Integer.parseInt(songNameMaxKey)][0], String.format("%.1f%%", songNameMaxSimilarity * 100)}, {"歌手", songArtist, localMusic[Integer.parseInt(songNameMaxKey)][1], String.format("%.1f%%", songArtistMaxSimilarity * 100)}, {"专辑", songAlbum, localMusic[Integer.parseInt(songNameMaxKey)][2], String.format("%.1f%%", songAlbumMaxSimilarity * 100)}};
                         TablePrinter.printTable(header, data, "匹配详情");
-                        System.out.println("\tY/y/直接回车：按照表格中的信息添加到歌单");
-                        System.out.println("\tN/n：不添加到歌单");
-                        System.out.println("\t输入歌曲相关信息，自行手动完成匹配");
+                        System.out.println("""
+                                \tY/y/直接回车：按照表格中的信息添加到歌单
+                                \tN/n：不添加到歌单
+                                \t输入歌曲相关信息，自行手动完成匹配""");
                         System.out.print("请选择您的操作：");
 
                         String input = scanner.nextLine().toLowerCase();

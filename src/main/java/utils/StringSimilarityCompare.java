@@ -103,10 +103,10 @@ public class StringSimilarityCompare {
         int[][] d; // 矩阵
         int n = str.length();
         int m = target.length();
-        int i; // 遍历str的
-        int j; // 遍历target的
-        char ch1; // str的
-        char ch2; // target的
+        int i; // 遍历str
+        int j; // 遍历target
+        char ch1; // str
+        char ch2; // target
         int temp; // 记录相同字符,在某个矩阵位置值的增量,不是0就是1
         if (n == 0) {
             return m;
@@ -134,7 +134,6 @@ public class StringSimilarityCompare {
                 } else {
                     temp = 1;
                 }
-
                 // 左边+1,上边+1, 左上角+temp取最小
                 d[i][j] = min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + temp);
             }
@@ -158,17 +157,6 @@ public class StringSimilarityCompare {
     public static double similarityRatio(String strA, String strB) {
         return 1 - (double) compare(strA, strB) / Math.max(strA.length(), strB.length());
     }
-
-
-//    public static void main(String[] args) {
-//        String strA = "河北唐山市协和医院";
-//        String strB = "河北省唐山协和医院";
-//
-//        System.out.println(longestCommonSubstringNoOrder(strA, strB));
-//        System.out.println(SimilarDegree(strA, strB));
-//        System.out.println(compare(strA, strB));
-//        System.out.println(similarityRatio(strA, strB));
-//    }
 
 }
 

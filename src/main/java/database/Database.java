@@ -14,10 +14,15 @@ import java.sql.SQLException;
 
 public class Database {
 
-    public Connection getConnection(String dbName) {
+    /**
+     * 获取数据库的连接
+     * @param dbPath 数据库文件的名称或绝对路径
+     * @return 数据库连接接口
+     */
+    public Connection getConnection(String dbPath) {
         Connection conn = null;
         try {
-            String url = "jdbc:sqlite:SQLite/" + dbName;
+            String url = "jdbc:sqlite:" + dbPath;
             conn = DriverManager.getConnection(url);
             Logger.success("成功连接SQLite数据库");
         } catch (SQLException e) {
@@ -26,6 +31,10 @@ public class Database {
         return conn;
     }
 
+    /**
+     * 关闭到数据库的连接
+     * @param conn 数据库连接接口
+     */
     public void closeConnection(Connection conn) {
         try {
             conn.close();

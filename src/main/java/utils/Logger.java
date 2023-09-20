@@ -14,18 +14,34 @@ public class Logger {
     private static final String YELLOW = "\u001b[33m";
     private static final String END = "\u001b[0m";
 
+    /**
+     * 输出INFO级别的日志信息
+     * @param msg 要输出的字符串
+     */
     public static void info(String msg) {
         System.out.println(BLUE + BOLD + "[INFO] " + END + BLUE + msg + END);
     }
 
+    /**
+     * 输出WARNING级别的日志信息
+     * @param msg 要输出的字符串
+     */
     public static void warning(String msg) {
         System.out.println(YELLOW + BOLD + "[WARNING] " + END + YELLOW + msg + END);
     }
 
+    /**
+     * 输出ERROR级别的日志信息
+     * @param msg 要输出的字符串
+     */
     public static void error(String msg) {
         System.out.println(RED + BOLD + "[ERROR] " + END + RED + msg + END);
     }
 
+    /**
+     * 输出SUCCESS级别的日志信息
+     * @param msg 要输出的字符串
+     */
     public static void success(String msg) {
         System.out.println(GREEN + BOLD + "[SUCCESS] " + END + GREEN + msg + END);
     }

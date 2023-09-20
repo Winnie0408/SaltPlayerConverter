@@ -49,7 +49,6 @@ public class Universal {
     Map<String, String> songNum; //存放某ID所对应歌单中的歌曲数量 [歌单ID][歌曲数量]
     Queue<String> selectedPlayListId = new LinkedList<>(); //存放用户选择的歌单序号
     Properties prop; //存放配置文件
-    Date date;
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /**
@@ -147,23 +146,23 @@ public class Universal {
      */
     private void readDatabase() {
         while (true) {
-            if (prop.getProperty("databasePath") != null) {
-                System.out.println("\t直接回车使用上次输入的路径【" + prop.getProperty("databasePath") + "】");
+            if (prop.getProperty(SOURCE_ENG + "DatabasePath") != null) {
+                System.out.println("\t直接回车使用上次输入的路径【" + prop.getProperty(SOURCE_ENG + "DatabasePath") + "】");
                 System.out.print("请输入" + SOURCE_CHN + "数据库文件的绝对路径：");
             } else
                 System.out.print("请输入" + SOURCE_CHN + "数据库文件的绝对路径，" +
                         "\n或将数据库文件复制到项目的SQLite目录后，按下回车：");
             String input = scanner.nextLine();
 
-            if (input.isEmpty() && prop.getProperty("databasePath") == null) {
-                conn = database.getConnection(DATABASE_NAME);
+            if (input.isEmpty() && prop.getProperty(SOURCE_ENG + "DatabasePath") == null) {
+                conn = database.getConnection("SQLite/" + DATABASE_NAME);
                 if (conn == null) {
                     Logger.error("项目SQLite目录内的" + DATABASE_NAME + "不存在，请检查！");
                     continue;
                 }
                 Logger.info("使用项目SQLite目录内的" + DATABASE_NAME + "文件");
-            } else if (input.isEmpty() && prop.getProperty("databasePath") != null) {
-                input = prop.getProperty("databasePath");
+            } else if (input.isEmpty() && prop.getProperty(SOURCE_ENG + "DatabasePath") != null) {
+                input = prop.getProperty(SOURCE_ENG + "DatabasePath");
                 File path = new File(input);
                 if (!path.exists()) {
                     Logger.error("上次使用路径" + input + "的数据库文件不存在，请检查并重新输入！");
@@ -176,6 +175,7 @@ public class Universal {
                 }
                 Logger.info("使用上次输入的路径" + input + "的数据库文件");
             } else {
+                input = FileOperation.deleteQuotes(input);
                 File path = new File(input);
                 if (!path.exists()) {
                     Logger.error("指定路径" + input + "的数据库文件不存在，请检查并重新输入！");
@@ -187,7 +187,7 @@ public class Universal {
                     continue;
                 }
                 Logger.info("使用指定路径" + input + "的数据库文件");
-                PropertiesRelated.save("databasePath", input);
+                PropertiesRelated.save(SOURCE_ENG + "DatabasePath", input);
                 if (!input.isEmpty())
                     Logger.success("已将您本次输入的路径保存至配置文件");
             }
@@ -416,8 +416,7 @@ public class Universal {
                 int successNum = 0;
 
                 Logger.info("======正在匹配歌单【" + playListName.get(i) + "】======");
-                date = new Date();
-                MarkdownLog.date(dateFormat.format(date));
+                MarkdownLog.date(dateFormat.format(new Date()));
                 MarkdownLog.playListTitle(playListName.get(i));
                 Sleep.start(300);
 
@@ -597,11 +596,12 @@ public class Universal {
                         TablePrinter.printTable(header, data, "匹配详情");
                         String input;
                         if (!allYes && !allNo) {
-                            System.out.println("\tY/y/直接回车：按照表格中的信息添加到歌单");
-                            System.out.println("\tN/n：不添加到歌单");
-                            System.out.println("\t输入歌曲相关信息，自行手动完成匹配");
-                            System.out.println("若在输入的选项前加上【A/a】，本次选择的操作将应用于当前歌单的所有后续歌曲");
-                            System.out.print("请选择您的操作：");
+                            System.out.print("""
+                                    \tY/y/直接回车：按照表格中的信息添加到歌单
+                                    \tN/n：不添加到歌单
+                                    \t输入歌曲相关信息，自行手动完成匹配
+                                    "若在输入的选项前加上【A/a】，本次选择的操作将应用于当前歌单的所有后续歌曲
+                                    "请选择您的操作：""");
                             input = scanner.nextLine().toLowerCase();
                         } else if (allYes) {
                             input = "y";
@@ -724,6 +724,17 @@ public class Universal {
                 }
                 System.out.println("\n======共" + songNum.get(playListId.get(i)) + "首，成功" + successNum + "首======\n" +
                         "======歌单" + (i + 1) + "【" + playListName.get(i) + "】匹配完成，剩余" + (selectedPlayListId.size() - 1) + "个歌单======");
+
+                Statistic.report(SOURCE_ENG, songNum.get(playListId.get(i)), successNum);
+
+//                int finalSuccessNum = successNum;
+//                int finalI = i;
+//                new Thread(new Runnable() {
+//                    public void run() {
+//                        Statistic.report(SOURCE_ENG, songNum.get(playListId.get(finalI)), finalSuccessNum);
+//                    }
+//                }).start();
+
                 if ((selectedPlayListId.size() - 1) > 0) {
                     Logger.info("3秒后继续匹配下一歌单");
                     System.out.print("3 ");

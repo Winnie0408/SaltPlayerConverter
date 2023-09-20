@@ -7,6 +7,10 @@ package utils;
  **/
 
 public class Sleep {
+    /**
+     * 程序暂停
+     * @param miliseconds 要暂停的毫秒数
+     */
     public static void start(int miliseconds) {
         try {
             Thread.sleep(miliseconds);

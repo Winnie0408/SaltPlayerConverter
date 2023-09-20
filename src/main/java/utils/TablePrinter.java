@@ -106,6 +106,11 @@ public class TablePrinter {
         out.println();
     }
 
+    /**
+     * 获取字符串的宽度
+     * @param s 要处理的字符串
+     * @return 字符串的宽度
+     */
     private static int getDisplayWidth(String s) {
         int width = 0;
         for (int i = 0; i < s.length(); i++) {
