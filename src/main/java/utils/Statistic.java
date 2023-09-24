@@ -59,16 +59,12 @@ public class Statistic {
      * @param: [type, result]
      * @date: 2023-09-20 11:15
      */
-    public static void report(String sourceApp, String totalNumber, int successNumber) {
+    public static void report(Map<String, Object> result) {
         if (isEnable()) {
             Logger.info("正在向服务器发送本次转换的统计数据...");
             Properties prop = PropertiesRelated.read();
             String uuid = prop.getProperty("uuid");
             String time = dateFormat.format(new Date());
-            Map<String, Object> result = new HashMap<>();
-            result.put("sourceApp", sourceApp);
-            result.put("totalNumber", totalNumber);
-            result.put("successNumber", successNumber);
             result.put("uuid", uuid);
             result.put("time", time);
             send(new JSONObject(result));
