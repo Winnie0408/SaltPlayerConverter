@@ -341,7 +341,7 @@ public class Universal {
                 similaritySame = 0.85;
             } else {
                 if (Double.parseDouble(input) < 0.0 || Double.parseDouble(input) > 1.0) {
-                    Logger.warning("输入的相似度阈值不在0.0~1.0之间，请重新输入！");
+                    Logger.warning("输入的值不在0.0~1.0之间，请重新输入！");
                     continue;
                 }
                 similaritySame = Double.parseDouble(input);
@@ -349,43 +349,46 @@ public class Universal {
             break;
         }
 
-        boolean parenthesesRemoval = false; //是否启用括号内内容去除
-        if (prop.getProperty("parenthesesRemoval") != null) {
-            if (prop.getProperty("parenthesesRemoval").equals("true")) {
-                Logger.info("您已在配置文件中【启用】括号去除");
-                Sleep.start(500);
-                parenthesesRemoval = true;
-            } else if (prop.getProperty("parenthesesRemoval").equals("false")) {
-                Logger.info("您已在配置文件中【禁用】括号去除");
-                Sleep.start(500);
-                parenthesesRemoval = false;
-            }
-        } else {
-            while (true) {
-                System.out.print("是否启用括号去除？启用此功能（应该）可以大幅提升外语歌曲的识别正确率 (y/N)：");
-                String input = scanner.nextLine();
-                if (input.equalsIgnoreCase("y")) {
-                    parenthesesRemoval = true;
-//                    PropertiesRelated.save("parenthesesRemoval", "true");
-                    Logger.info("已启用括号去除");
-//                    Logger.success("已将您的选择保存至配置文件");
-                } else if (input.equalsIgnoreCase("n") || input.isEmpty()) {
-                    parenthesesRemoval = false;
-//                    PropertiesRelated.save("parenthesesRemoval", "false");
-                    Logger.info("已禁用括号去除");
-//                    Logger.success("已将您的选择保存至配置文件");
-                } else {
-                    Logger.warning("输入有误，请重新输入！");
-                    continue;
-                }
-                Sleep.start(500);
-                break;
-            }
-        }
+        boolean parenthesesRemoval = false; //是否启用括号内容去除
 
         Logger.info("开始匹配");
         Sleep.start(300);
         try {
+            if (prop.getProperty("enableParenthesesRemoval") != null) {
+                if (prop.getProperty("enableParenthesesRemoval").equals("true")) {
+                    Logger.info("您已在配置文件中【启用】括号去除");
+                    Sleep.start(500);
+                    parenthesesRemoval = true;
+                } else if (prop.getProperty("enableParenthesesRemoval").equals("false")) {
+                    Logger.info("您已在配置文件中【禁用】括号去除");
+                    Sleep.start(500);
+                    parenthesesRemoval = false;
+                }
+            } else {
+                while (true) {
+                    System.out.print("是否对此歌单启用括号去除？启用此功能（应该）可以大幅提升外语歌曲的识别正确率 (y/N)：");
+                    String input = scanner.nextLine();
+                    if (input.equalsIgnoreCase("y")) {
+                        parenthesesRemoval = true;
+//                    PropertiesRelated.save("parenthesesRemoval", "true");
+                        Logger.info("已启用括号去除");
+//                    Logger.success("已将您的选择保存至配置文件");
+                    } else if (input.equalsIgnoreCase("n") || input.isEmpty()) {
+                        parenthesesRemoval = false;
+//                    PropertiesRelated.save("parenthesesRemoval", "false");
+                        Logger.info("已禁用括号去除");
+//                    Logger.success("已将您的选择保存至配置文件");
+                    } else {
+                        Logger.warning("输入有误，请重新输入！");
+                        continue;
+                    }
+                    Sleep.start(500);
+                    break;
+                }
+            }
+
+            boolean stop = false;
+
             for (int i = 0; i < playListId.size(); i++) { //遍历读取到的所有歌单
                 if (!selectedPlayListId.isEmpty()) { //获取用户选择的歌单
                     //如果用户选择的歌单序号不等于当前歌单序号，则跳过当前歌单
@@ -552,10 +555,22 @@ public class Universal {
                             System.out.print("""
                                     \tY/y/直接回车：按照表格中的信息添加到歌单
                                     \tN/n：不添加到歌单
+                                    若在以上选项【前】加上[A/a]，本次选择的操作将应用于当前歌单的所有后续歌曲
                                     \t输入歌曲相关信息，自行手动完成匹配
-                                    "若在输入的选项前加上【A/a】，本次选择的操作将应用于当前歌单的所有后续歌曲
-                                    "请选择您的操作：""");
-                            input = scanner.nextLine().toLowerCase();
+                                    \t#*abort*#：提前结束本歌单的匹配操作，进入下一歌单
+                                    \t#*ABORT*#：提前结束本音乐平台的匹配操作，返回主菜单
+                                    请选择您的操作：""");
+                            input = scanner.nextLine();
+                            if (input.equals("#*abort*#")) {
+                                Logger.warning("已提前结束本歌单的匹配操作，进入下一歌单\n");
+                                Sleep.start(500);
+                                break;
+                            }
+                            if (input.equals("#*ABORT*#")) {
+                                stop = true;
+                                break;
+                            }
+                            input = input.toLowerCase();
                         } else if (allYes) {
                             input = "y";
                             Logger.success("使用默认操作：添加到歌单");
@@ -645,6 +660,8 @@ public class Universal {
                         }
                     }
                 }
+                if (stop)
+                    break;
                 long endTime = System.currentTimeMillis(); //结束时间
                 System.out.println("\n======共" + songNum.get(playListId.get(i)) + "首，成功" + successNum + "首======\n" +
                         "======歌单" + (i + 1) + "【" + playListName.get(i) + "】匹配完成，剩余" + (selectedPlayListId.size() - 1) + "个歌单======");
@@ -676,7 +693,10 @@ public class Universal {
                 } else
                     System.out.println();
             }
-            Logger.success(SOURCE_CHN + "所有歌单匹配完成，返回主菜单\n");
+            if (stop)
+                Logger.warning("已提前结束本音乐平台的匹配操作，返回主菜单\n");
+            else
+                Logger.success(SOURCE_CHN + "所有歌单匹配完成，返回主菜单\n");
         } catch (SQLException | IOException | NullPointerException e) {
             Logger.error("很抱歉！程序运行出现错误，请重试\n错误详情：" + e);
         }

@@ -15,7 +15,7 @@ public class Main {
 
         Statistic.saveUuid();
         MarkdownLog.checkLogFile();
-        System.out.println("欢迎使用椒盐音乐歌单转换小工具！");
+        System.out.println("欢迎使用椒盐音乐歌单转换小助手！");
         while (true) {
             System.out.print("""
                     \t1. 网易云音乐
