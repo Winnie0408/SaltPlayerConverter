@@ -16,10 +16,10 @@
 
 - 电脑 *1 （系统不限，安装了Java运行环境\[JRE\]即可）
 - Android设备：
-    - 若使用的主力设备**已获取**Root权限，则只需要一台即可。
+    - 若使用的主力设备**已获取**Root权限，则只需要一台即可，**无视**后文中主力机与备用机的区分。
     - 若使用的主力设备**未获取**Root权限，则需要两台设备：
-        - 一台获取了Root权限的Android设备，真机或虚拟机皆可。
-        - 一台主力Android设备。
+        - 一台获取了Root权限的Android设备，真机或虚拟机皆可，后文中称其为**备用设备**。
+        - 一台主力Android设备，后文中称其为**主力设备**。
 
 #### 软件
 
@@ -46,6 +46,10 @@
 
 ## 使用方法
 
+> **Note**
+>
+> **强烈推荐**您将本README文件完整阅读后，再进行相关操作！
+
 ### 0. 准备工作
 
 安装上述软件
@@ -55,7 +59,7 @@
 
 ### 1. 获取在线音乐平台的歌单数据
 
-**（在获取了Root权限的Android设备，或虚拟机上操作）**
+**（在备用设备上操作）**
 
 1. 打开需要使用的在线音乐平台客户端APP。
 2. 登录账号。
@@ -80,7 +84,7 @@
 
 ### 2. 获取本地音乐的标签（ID3 Tag）信息
 
-**（在主力Android设备上操作）**
+**（在主力设备上操作）**
 
 1. 将音乐文件保存在手机里（相信您已经完成这个步骤了）。
 2. 打开**音乐标签**APP。
@@ -101,8 +105,9 @@
 
 **（在电脑上操作）**
 
-1. 运行本项目（以下方式三选一即可）。
+1. 运行本项目（[怎么运行？](README.md#项目的使用与运行)以下方式四选一即可）。
     - 使用Java IDE（如IntelliJ IDEA、Eclipse等）从源码运行（需要电脑已配置JDK \[Java开发工具包\]）。
+    - 使用Maven从源码编译、构建，并运行JAR包。
     - 下载并运行JAR包（需要电脑已安装JRE \[Java运行环境\]）。
     - 下载并运行EXE文件（无需安装JRE或配置JDK）。
 2. 新建**SQLite**目录，并将步骤1.6中获取到的数据库文件复制进去 **（可选，注意不要更改数据库的文件名）**。
@@ -117,7 +122,7 @@
 
 ### 4. 将歌单导入椒盐音乐
 
-**（在主力Android设备上操作）**
+**（在主力设备上操作）**
 
 1. 打开**椒盐音乐**APP。
 2. 右滑或点击右上角菜单按钮，进入**菜单**，点击**歌单**。
@@ -126,6 +131,105 @@
 5. 在椒盐音乐中查看导入的歌单。
 
 ## 其他事项
+
+### 项目的使用与运行
+
+#### 1. 使用Java IDE（如IntelliJ IDEA、Eclipse等）从源码运行
+
+1. 克隆或下载本项目的源码。
+
+```bash
+git clone git@github.com:Winnie0408/SaltPlayerConverter.git
+```
+
+2. 使用Java IDE打开本并信任项目。
+3. 打开项目根目录下的`pom.xml`文件，使用IDE自带的Maven工具下载项目所需的依赖。（推荐[配置Maven源为阿里云或其他国内镜像](README.md#配置maven镜像源)，以加快下载速度）。
+4. 运行项目中的`src/main/java/Main.java`文件。
+
+#### 2. 使用Maven从源码编译、并运行JAR包
+
+1. 克隆或下载本项目的源码。
+
+```bash
+git clone git@github.com:Winnie0408/SaltPlayerConverter.git
+```
+
+2. 进入项目目录，使用Maven编译项目。（推荐[配置Maven源为阿里云或其他国内镜像](README.md#配置maven镜像源)，以加快下载速度）。
+
+```bash
+mvn clean package
+```
+
+3. 等待编译完成，控制台输出`BUILD SUCCESS`，进入项目中的`target`目录，运行以`.jar`结尾的文件。
+
+```bash
+java -jar [FileName].jar
+```
+
+#### 3. 下载并运行JAR包
+
+1. 在项目的[Release页面](https://github.com/Winnie0408/SaltPlayerConverter/releases)，找到最新版本，下载以`.jar`结尾的文件。
+2. 运行刚刚下载的JAR包。
+
+```bash
+java -jar [FileName].jar
+```
+
+#### 4. 下载并运行EXE文件
+
+1. 在项目的[Release页面](https://github.com/Winnie0408/SaltPlayerConverter/releases)，找到最新版本，下载适合自己电脑架构的，以`.exe`结尾的文件。
+2. 双击运行刚刚下载的文件。
+
+### 配置Maven镜像源
+
+#### Windows
+
+- 使用自行安装的Maven
+    1. 在Maven的安装目录中，找到并打开`conf/settings.xml`文件。
+    2. 在该文件的`<mirrors></mirrors>`节点中添加子节点。
+- 使用IDE自带的Maven
+    1. 进入`C:\Users\[Username]\.m2`目录，找到并打开`settings.xml`文件。
+    2. 在该文件的`<mirrors></mirrors>`节点中添加子节点。
+
+#### Linux
+
+1. 进入`/etc/maven/conf`目录，找到并打开`settings.xml`文件。
+2. 在该文件的`<mirrors></mirrors>`节点中添加子节点。
+
+#### 可用子节点（添加一个或多个皆可）
+
+- 阿里云
+
+```xml
+<mirror>
+    <id>aliyunmaven</id>
+    <mirrorOf>*</mirrorOf>
+    <name>阿里云公共仓库</name>
+    <url>https://maven.aliyun.com/repository/public</url>
+</mirror>
+```
+
+- 网易
+
+```xml
+<mirror>
+    <id>netease</id>
+    <url>http://maven.netease.com/repository/public/</url>
+    <mirrorOf>central</mirrorOf>
+</mirror>
+  ```
+
+- 中国科学技术大学USTC
+
+```xml
+<mirror>
+    <id>ustc</id>
+    <url>http://mirrors.ustc.edu.cn/maven/maven2/</url>
+    <mirrorOf>central</mirrorOf>
+</mirror>
+ ```
+
+- [其他镜像源](https://blog.csdn.net/qq_38217990/article/details/129257106)
 
 ### 配置文件
 
@@ -142,7 +246,7 @@
 - `uuid`: 为这台电脑生成的唯一ID。将程序第一次运行，且`enableStatistic`值不为`false`时生成。 **强烈不建议**您手动修改本项的值。
 - `enableStatistic`: 是否启用**统计数据发送**功能。
     - `true`: **启用**统计数据发送功能，程序会在**每转换完一个歌单后**，向统计分析服务器发送本次转换的相关统计信息，该信息**不包含您的任何敏感信息**，只会发送部分程序运行效率相关的数据[（包含哪些数据?）](README.md#发送的统计数据)。
-    - `false`: **禁用**统计数据发送功能，程序**不会**向统计分析服务器发送任何数据；若**第一次运行程序时**就将其值设置为`false`，则不会生成`uuid`。
+    - `false`: **禁用**统计数据发送功能，程序**不会**向统计分析服务器发送任何数据，**不会连接互联网**；若**第一次运行程序时**就将其值设置为`false`，则不会生成`uuid`。
     - 配置文件中不包含该项 或 值为其他文本: 同`true`。
 - `.*DatabasePath`: 用于保存您上一次输入的数据库文件的绝对路径。若您将数据库文件存放在项目的SQLite目录下，并在程序运行时直接`回车`，则该项不会生成。
 - `musicOutputPath`: 用于保存您上一次输入的`本地音乐导出.txt`文件的绝对路径。
