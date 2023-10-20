@@ -663,6 +663,7 @@ public class Universal {
                 result.put("autoSuccessCount", autoSuccessCount);
                 result.put("startTime", sdf.format(startTime));
                 result.put("endTime", sdf.format(endTime));
+                result.put("enableAlbumNameMatch", !disableAlbumNameMatch);
                 Statistic.report(result);
 
                 if ((selectedPlayListId.size() - 1) > 0) {
