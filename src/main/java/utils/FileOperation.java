@@ -10,7 +10,7 @@ import java.util.Scanner;
  **/
 
 public class FileOperation {
-    static Scanner scanner = new Scanner(System.in);
+    static Scanner scanner = new Scanner(System.in, PropertiesRelated.read().getProperty("terminalCharSet"));
 
     /**
      * 删除指定文件夹下的所有文件

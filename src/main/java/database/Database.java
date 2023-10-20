@@ -16,6 +16,7 @@ public class Database {
 
     /**
      * 获取数据库的连接
+     *
      * @param dbPath 数据库文件的名称或绝对路径
      * @return 数据库连接接口
      */
@@ -33,6 +34,7 @@ public class Database {
 
     /**
      * 关闭到数据库的连接
+     *
      * @param conn 数据库连接接口
      */
     public void closeConnection(Connection conn) {

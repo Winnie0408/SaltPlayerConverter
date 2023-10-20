@@ -1,6 +1,8 @@
 import converter.Universal;
 import utils.MarkdownLog;
+import utils.PropertiesRelated;
 import utils.Statistic;
+import utils.TerminalCharSetDetect;
 
 import java.util.Scanner;
 
@@ -12,6 +14,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        TerminalCharSetDetect.get();
 
         Statistic.saveUuid();
         MarkdownLog.checkLogFile();
@@ -24,7 +27,7 @@ public class Main {
                     \t4. 酷我音乐
                     \t其他字符. 退出程序
                     请选择歌单来源(输入数字)：""");
-            Scanner scanner = new Scanner(System.in);
+            Scanner scanner = new Scanner(System.in, PropertiesRelated.read().getProperty("terminalCharSet"));
             switch (scanner.next()) {
                 case "1" -> new Universal().init("CloudMusic");
                 case "2" -> new Universal().init("QQMusic");

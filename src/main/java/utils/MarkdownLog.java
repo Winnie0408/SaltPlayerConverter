@@ -19,7 +19,7 @@ public class MarkdownLog {
     private static final String BLUE = "<font color=blue>";
     private static final String YELLOW = "<font color=yellow>";
     private static final String END = "</font>";
-    static Scanner scanner = new Scanner(System.in);
+    static Scanner scanner = new Scanner(System.in, PropertiesRelated.read().getProperty("terminalCharSet"));
 
     /**
      * 将内容写入文件

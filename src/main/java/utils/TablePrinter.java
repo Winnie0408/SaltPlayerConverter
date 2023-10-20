@@ -108,6 +108,7 @@ public class TablePrinter {
 
     /**
      * 获取字符串的宽度
+     *
      * @param s 要处理的字符串
      * @return 字符串的宽度
      */

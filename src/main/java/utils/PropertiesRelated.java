@@ -31,6 +31,7 @@ public class PropertiesRelated {
 
     /**
      * 读取配置文件
+     *
      * @return 包含配置信息的Properties类
      */
     public static Properties read() {

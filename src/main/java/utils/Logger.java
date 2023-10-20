@@ -16,6 +16,7 @@ public class Logger {
 
     /**
      * 输出INFO级别的日志信息
+     *
      * @param msg 要输出的字符串
      */
     public static void info(String msg) {
@@ -24,6 +25,7 @@ public class Logger {
 
     /**
      * 输出WARNING级别的日志信息
+     *
      * @param msg 要输出的字符串
      */
     public static void warning(String msg) {
@@ -32,6 +34,7 @@ public class Logger {
 
     /**
      * 输出ERROR级别的日志信息
+     *
      * @param msg 要输出的字符串
      */
     public static void error(String msg) {
@@ -40,6 +43,7 @@ public class Logger {
 
     /**
      * 输出SUCCESS级别的日志信息
+     *
      * @param msg 要输出的字符串
      */
     public static void success(String msg) {

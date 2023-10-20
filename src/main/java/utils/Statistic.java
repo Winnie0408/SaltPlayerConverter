@@ -9,8 +9,10 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 
 /**
  * @description: 向统计服务器报告程序运行结果
@@ -21,7 +23,6 @@ import java.util.*;
 public class Statistic {
 
     private static final char[] CHAR_SET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_".toCharArray();
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /**
      * @description: 将一个长整数转换为指定进制的字符串
@@ -64,9 +65,7 @@ public class Statistic {
             Logger.info("正在向服务器发送本次转换的统计数据...");
             Properties prop = PropertiesRelated.read();
             String uuid = prop.getProperty("uuid");
-            String time = dateFormat.format(new Date());
             result.put("uuid", uuid);
-            result.put("time", time);
             send(new JSONObject(result));
         }
     }
@@ -77,13 +76,12 @@ public class Statistic {
      * @param data 待发送的统计数据
      */
     private static void send(JSONObject data) {
-        String url = "https://dns.hwinzniej.top:28082/info/save";
+        String url = "https://dns.hwinzniej.top:46000/statistic/save";
         try {
             CloseableHttpClient httpClient = HttpClientBuilder.create().build();
             HttpPost httpPost = new HttpPost(url);
 
-            StringEntity stringEntity = new StringEntity(data.toString());
-            stringEntity.setContentEncoding("UTF-8");
+            StringEntity stringEntity = new StringEntity(data.toString(), StandardCharsets.UTF_8);
             stringEntity.setContentType("application/json");
             httpPost.setEntity(stringEntity);
 

@@ -15,7 +15,7 @@ public class MapSort {
     /**
      * 对Map类型的数据根据值(Value)进行排序
      *
-     * @param map  要计算的Map集合
+     * @param map   要计算的Map集合
      * @param order A:升序 D:降序
      * @return 排序完成后的List
      */
@@ -37,7 +37,7 @@ public class MapSort {
     /**
      * 对Map类型的数据根据键(Key)进行排序
      *
-     * @param map 要计算的Map集合
+     * @param map   要计算的Map集合
      * @param order A:升序 D:降序
      * @return 排序完成后的List
      */
