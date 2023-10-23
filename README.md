@@ -1,8 +1,8 @@
 <h3 align="right">中文 / <a href="README_ENG.md">English</a></h3>
 <p align="center">
     <img src="markdownResources/cover.png" alt="cover" align=center />
-    <h2 align="center"> 欢迎使用 椒盐音乐歌单转换小助手</h2>
 </p>
+    <h2 align="center">欢迎使用 椒盐歌单助手</h2>
 
 ---
 
@@ -10,11 +10,20 @@
 
 现在，已经有大量用户将主力使用的音乐软件从**在线音乐平台**转为了**本地音乐播放器**，虽然歌曲可以很顺利且快速地进行迁移操作，但是无法将自己创建的歌单、或者其他用户的优秀歌单一并进行快速迁移操作，这个项目就是为了解决这个问题而诞生的。
 
+- 原计划基于CLI实现，但由于Windows终端的编码问题，导致无法正常显示中文/韩文/日文等字符，所以现在改为使用前后端分离来实现。
+- 重构版 前端仓库：[SaltPlayerConverterFrontEnd](https://github.com/Winnie0408/SaltPlayerConverterFrontEnd)
+- 重构版 后端仓库：[SaltPlayerConverterBackEnd](https://github.com/Winnie0408/SaltPlayerConverterBackEnd)
+- 若您出于各种原因不太想使用前后端重构版，并能够使用Linux或者Mac OS系统，那么您可以使用CLI版，匹配的核心算法是相同的，详情请查看[CLI版README](README_CLI.md)。
+
+### 视频教程
+
+🛠️🛠️🛠️ 施工中…… Under Construction…… 🛠️🛠️🛠️
+
 ### 需要使用的硬件与软件
 
 #### 硬件
 
-- 电脑 *1 （系统不限，安装了Java运行环境\[JRE\]即可）
+- 电脑或其他中大屏(普通平板大小及以上)横屏设备 *1
 - Android设备：
     - 若使用的主力设备**已获取**Root权限，则只需要一台即可，**无视**后文中主力机与备用机的区分。
     - 若使用的主力设备**未获取**Root权限，则需要两台设备：
@@ -25,6 +34,13 @@
 
 本项目需要配合以下软件一起使用：
 
+- 现代的浏览器（拥有一个即可）
+    - [Google Chrome](https://www.google.cn/chrome/)
+    - [Microsoft Edge](https://www.microsoft.com/zh-cn/edge)
+    - [Firefox](https://www.mozilla.org/zh-CN/firefox/new/)
+    - [Safari](https://www.apple.com.cn/safari/)
+    - [Opera](https://www.opera.com/zh-cn)
+    - 系统自带的浏览器
 - 受支持的[在线音乐平台](README.md#音乐平台的选择)的Android客户端（均为普通版本，选择自己使用的一个或多个平台）
     - [网易云音乐](https://music.163.com/)**（推荐）**
     - [QQ音乐](https://y.qq.com/)**（推荐）**
@@ -33,14 +49,15 @@
 - 音乐标签
     - [Windows](https://www.cnblogs.com/vinlxc/p/11347744.html)
     - [Android](https://www.coolapk.com/apk/com.xjcheng.musictageditor)**（推荐）**
-- 获取ID3标签
-    - [Android](https://github.com/Winnie0408/MusicID3TagGetter)
+- 获取ID3标签（下载Release页面中的app-release.apk即可）
+    - [Android (项目介绍)](https://github.com/Winnie0408/MusicID3TagGetter)
+    - [Android (下载页面)](https://github.com/Winnie0408/MusicID3TagGetter/releases)
 - 文件管理器（选择一个即可）
     - [MT管理器](https://www.coolapk.com/apk/bin.mt.plus)**（推荐）**
     - [ES文件浏览器](https://www.coolapk.com/apk/com.estrongs.android.pop)
     - [MiXplorer](https://mixplorer.com)
 - Android虚拟机（当前使用的主力设备**未获取**Root权限时需要，选择一个即可）
-    - [VMOS Pro](https://www.coolapk.com/apk/com.vmos.pro)：在手机上使用的虚拟机~~（可能需要使用VIP版，详情查看该应用的酷安评论区）~~
+    - [VMOS Pro](https://www.coolapk.com/apk/com.vmos.pro)：在手机上使用的虚拟机 ~~（可能需要使用VIP版，详情查看该应用的酷安评论区）~~
     - [MuMu模拟器](https://mumu.163.com)：在电脑上使用的虚拟机
 - 椒盐音乐（或糖醋音乐）
 
@@ -56,6 +73,7 @@
 
 - **在线音乐平台客户端**与**文件管理器**，安装到有Root权限的设备（或虚拟机）上。
 - **音乐标签**、**获取ID3标签**、**椒盐音乐**、文件管理器（可选），安装到主力设备上。
+- 现代的浏览器，安装到电脑或其他中大屏设备上。
 
 ### 1. 获取在线音乐平台的歌单数据
 
@@ -80,9 +98,17 @@
     - 酷我音乐
         - 数据目录：`/data/user/0/cn.kuwo.player/databases`
         - 数据库文件：`kwplayer.db`
-7. 将数据库文件发送到电脑上。
+7. 将数据库文件发送到电脑或其他中大屏设备上。
 
-### 2. 获取本地音乐的标签（ID3 Tag）信息
+### 2. 刷新本地音乐的标签（ID3 Tag）信息
+
+> **Warning**
+>
+> 本步骤会**覆盖**您本地音乐的ID3标签信息，**请谨慎操作**！
+>
+> 若您之前已经自行匹配（或修改）过歌曲的ID3信息，可跳过步骤。
+>
+> 若后续匹配结果不理想，再重新进行此步骤即可。
 
 **（在主力设备上操作）**
 
@@ -94,186 +120,132 @@
     4. 返回到音乐标签主界面，点击右下角的**编辑**按钮，点击**自动匹配标签**。
     5. 在弹出的对话框中，**仅勾选**标题、艺术家、专辑，**并同时启用**其右侧的覆盖选项，按需调整“网络搜索线程数”，点击确定。
     6. 等待音乐标签批量匹配完成。
-3. 打开**获取ID3标签**APP。
+
+### 3. 获取本地音乐的标签（ID3 Tag）信息
+
+**（在主力设备上操作）**
+
+1. 打开**获取ID3标签**APP。
     1. 点击下方的**选择目录**按钮，根据提示授予所需权限。
     2. 选择音乐存放的目录（具体选择方式请查看[这里](https://github.com/Winnie0408/MusicID3TagGetter/blob/master/README.md#使用方法)），点击屏幕底部的**使用此文件夹**，在弹出的对话框中点击**允许**。
     3. 等待软件扫描并导出手机中音乐的ID3标签信息。
-    4. 前往软件的**导出目录**（手机存储目录中的Download）查看导出的ID3标签信息文件**本地音乐导出.txt**。
-    5. 将导出的ID3标签信息文件发送到电脑上。
+    4. 前往软件的**导出目录**（手机存储目录中的Download目录）查看导出的ID3标签信息文件**本地音乐导出.txt**。
+    5. 将导出的ID3标签信息文件发送到电脑或其他中大屏设备上。
 
-### 3. 进行歌单转换操作
+### 4. 进行歌单转换操作
 
-**（在电脑上操作）**
+**（在电脑或其他中大屏设备上操作）**
 
-1. 运行本项目（[怎么运行？](README.md#项目的使用与运行)以下方式四选一即可）。
-    - 使用Java IDE（如IntelliJ IDEA、Eclipse等）从源码运行（需要电脑已配置JDK \[Java开发工具包\]）。
-    - 使用Maven从源码编译、构建，并运行JAR包。
-    - 下载并运行JAR包（需要电脑已安装JRE \[Java运行环境\]）。
-    - 下载并运行EXE文件（无需安装JRE或配置JDK）。
-2. 新建**SQLite**目录，并将步骤1.6中获取到的数据库文件复制进去 **（可选，注意不要更改数据库的文件名）**。
-    - 若从源码运行，则在项目根目录下新建**SQLite**目录。
-    - 若从JAR包或EXE文件运行，则在JAR包或EXE文件同级目录下新建**SQLite**目录。
-3. 根据本项目的提示，进行文字输入或选择操作。
-4. 等待您选择的所有歌单转换完成。
-5. 使用本地或在线的Markdown编辑器，查看转换过程中在项目根目录生成的日志文件`ConvertLog.md`，查看转换过程是否出现错误或意外。**（可选）**
-6. 获取转换结果文件（文件名为歌单的名称），将其发送到主力Android设备上。
-    - 若从源码运行，则在项目根目录下的**Result**目录中。
-    - 若从JAR包或EXE文件运行，则在JAR包或EXE文件同级目录下的**Result**目录中。
+1. 进入[椒盐歌单助手](https://saltconv.hwinzniej.top:45999/)页面。
+2. 按照您的意愿，开启或关闭**允许发送统计数据**[（会发送哪些数据？）](README.md#发送的统计数据)，点击**开始**按钮。
+3. 选择**歌单来源**，点击下一步。
+4. 上传**本地音乐导出.txt**文件，点击下一步。
+5. 上传**数据库**文件，点击下一步。
+6. 选择您本次要转换的歌单，点击下一步。
+7. 根据您的需要，在页面左侧调整匹配的参数与设置，然后点击**预览歌单**按钮。
+8. 在页面右侧查看匹配结果，若您对匹配结果不满意，可以重新调整参数与设置并再次点击**预览歌单**按钮，若您对匹配结果满意，点击**导出歌单**。
+9. 若自动匹配的结果无法很好地满足您的需求，您可点击**跳转到第一个匹配失败的项**按钮，表格就会自动滚动并展开第一个匹配失败歌曲的详情，根据您的需要点击：
+    - **相同**按钮：详情中展示的匹配结果正确（只是相似度没达到您设置的阈值要求）。（点击按钮立即生效）
+    - **编辑**按钮：详情中展示的匹配结果错误，且您的本地歌曲中**有**歌单中对应的歌曲，您可以在弹窗中手动修改匹配结果。（在弹出的弹框中点击**确认**按钮后，该操作才生效）
+    - **放弃**按钮：详情中展示的匹配结果错误，且您的本地歌曲中**无**歌单中对应的歌曲，您可以放弃匹配该歌曲。（在弹出的弹框中点击**确认**按钮后，该操作才生效）
+        - 弹框中可以开启**放弃当前歌单所有自动匹配失败的歌曲**，若您启用该项，则该歌单中所有**自动匹配失败**（表格最右侧列为红色的**否**）的歌曲项将从表格（转换结果）中删除。
+10. 重复第9步，直至当前歌单所有（自动匹配失败的）歌曲您都检查过一遍，点击**保存当前歌单**按钮，在弹窗中选择要保存的类型，并预览转换结果，完成后点击保存，保存完成后会自动开始下一个歌单的匹配操作。
+11. 若您不想转换当前歌单了，可以点击**放弃当前歌单**按钮，会自动开始下一个歌单的匹配操作。
+12. 若您第6步中选择的所有歌单全部匹配完成，会弹出**匹配完成**弹框，点击**确认**按钮，会跳转到下载转换结果页面。
+13. 在下载转换结果页面，点击**下载转换结果**按钮，即可下载包含转换结果的压缩文件。
+14. 您看选择**手动删除**您本次转换操作中使用的所有文件：数据库文件、本地音乐导出文件、转换结果压缩文件（若您没有手动删除，这些文件也将在3天后**自动删除**）。
+15. 将压缩文件（解压后）发送到主力设备上。
 
-### 4. 将歌单导入椒盐音乐
+### 5. 将歌单导入椒盐音乐
 
 **（在主力设备上操作）**
 
 1. 打开**椒盐音乐**APP。
 2. 右滑或点击右上角菜单按钮，进入**菜单**，点击**歌单**。
 3. 点击**导入歌单 (.txt)**。
-4. **逐个选择**转换结果文件，将其导入到椒盐音乐中。
+4. （将压缩文件解压，）**逐个选择**压缩文件中的转换结果文件，将其导入到椒盐音乐中。
 5. 在椒盐音乐中查看导入的歌单。
+
+---
 
 ## 其他事项
 
 ### 项目的使用与运行
 
-#### 1. 使用Java IDE（如IntelliJ IDEA、Eclipse等）从源码运行
+#### 1. 直接使用我提供的服务
 
-1. 克隆或下载本项目的源码。
+[椒盐歌单转换助手](https://saltconv.hwinzniej.top:45999/)
 
-```bash
-git clone git@github.com:Winnie0408/SaltPlayerConverter.git
-```
+#### 2. 自行从源码编译运行
 
-2. 使用Java IDE打开本并信任项目。
-3. 打开项目根目录下的`pom.xml`文件，使用IDE自带的Maven工具下载项目所需的依赖。（推荐[配置Maven源为阿里云或其他国内镜像](README.md#配置maven镜像源)，以加快下载速度）。
-4. 运行项目中的`src/main/java/Main.java`文件。
-
-#### 2. 使用Maven从源码编译、并运行JAR包
-
-1. 克隆或下载本项目的源码。
-
-```bash
-git clone git@github.com:Winnie0408/SaltPlayerConverter.git
-```
-
-2. 进入项目目录，使用Maven编译项目。（推荐[配置Maven源为阿里云或其他国内镜像](README.md#配置maven镜像源)，以加快下载速度）。
-
-```bash
-mvn clean package
-```
-
-3. 等待编译完成，控制台输出`BUILD SUCCESS`，进入项目中的`target`目录，运行以`.jar`结尾的文件。
-
-```bash
-java -jar [FileName].jar
-```
-
-#### 3. 下载并运行JAR包
-
-1. 在项目的[Release页面](https://github.com/Winnie0408/SaltPlayerConverter/releases)，找到最新版本，下载以`.jar`结尾的文件。
-2. 运行刚刚下载的JAR包。
-
-```bash
-java -jar [FileName].jar
-```
-
-#### 4. 下载并运行EXE文件
-
-1. 在项目的[Release页面](https://github.com/Winnie0408/SaltPlayerConverter/releases)，找到最新版本，下载适合自己电脑架构的，以`.exe`结尾的文件。
-2. 双击运行刚刚下载的文件。
-
-### 配置Maven镜像源
-
-#### Windows
-
-- 使用自行安装的Maven
-    1. 在Maven的安装目录中，找到并打开`conf/settings.xml`文件。
-    2. 在该文件的`<mirrors></mirrors>`节点中添加子节点。
-- 使用IDE自带的Maven
-    1. 进入`C:\Users\[Username]\.m2`目录，找到并打开`settings.xml`文件。
-    2. 在该文件的`<mirrors></mirrors>`节点中添加子节点。
-
-#### Linux
-
-1. 进入`/etc/maven/conf`目录，找到并打开`settings.xml`文件。
-2. 在该文件的`<mirrors></mirrors>`节点中添加子节点。
-
-#### 可用子节点（添加一个或多个皆可）
-
-- 阿里云
-
-```xml
-<mirror>
-    <id>aliyunmaven</id>
-    <mirrorOf>*</mirrorOf>
-    <name>阿里云公共仓库</name>
-    <url>https://maven.aliyun.com/repository/public</url>
-</mirror>
-```
-
-- 网易
-
-```xml
-<mirror>
-    <id>netease</id>
-    <url>http://maven.netease.com/repository/public/</url>
-    <mirrorOf>central</mirrorOf>
-</mirror>
-  ```
-
-- 中国科学技术大学USTC
-
-```xml
-<mirror>
-    <id>ustc</id>
-    <url>http://mirrors.ustc.edu.cn/maven/maven2/</url>
-    <mirrorOf>central</mirrorOf>
-</mirror>
- ```
-
-- [其他镜像源](https://blog.csdn.net/qq_38217990/article/details/129257106)
-
-### 配置文件
-
-本项目在运行时会读取并写入**项目根目录**下的`config.properties`文件，当该文件不存在时会自动创建。
-
-#### 配置文件的格式
-
-`配置名=配置值`
-
-（如：`version=0.99`、`enableStatistic=true`）
-
-#### 可使用的配置项
-
-- `uuid`: 为这台电脑生成的唯一ID。将程序第一次运行，且`enableStatistic`值不为`false`时生成。 **强烈不建议**您手动修改本项的值。
-- `enableStatistic`: 是否启用**统计数据发送**功能。
-    - `true`: **启用**统计数据发送功能，程序会在**每转换完一个歌单后**，向统计分析服务器发送本次转换的相关统计信息，该信息**不包含您的任何敏感信息**，只会发送部分程序运行效率相关的数据[（包含哪些数据?）](README.md#发送的统计数据)。
-    - `false`: **禁用**统计数据发送功能，程序**不会**向统计分析服务器发送任何数据，**不会连接互联网**；若**第一次运行程序时**就将其值设置为`false`，则不会生成`uuid`。
-    - 配置文件中不包含该项 或 值为其他文本: 同`true`。
-- `.*DatabasePath`: 用于保存您上一次输入的数据库文件的绝对路径。若您将数据库文件存放在项目的SQLite目录下，并在程序运行时直接`回车`，则该项不会生成。
-- `musicOutputPath`: 用于保存您上一次输入的`本地音乐导出.txt`文件的绝对路径。
-- `enableParenthesesRemoval`: 是否启用**括号内容去除**功能。启用此功能可以大幅提升外语歌曲的识别正确率[（为什么?）](README.md#括号内容去除)。
-    - `true`: **启用**括号内容去除功能。
-    - `false`: **禁用**括号内容去除功能。
-    - 配置文件中不包含该项 或 值为其他文本: 忽略本项的值，并在运行时询问用户是否启用括号内容去除功能。
+过程比较繁琐，不推荐普通用户使用，故不在本项目的README中介绍，对项目感兴趣的大佬可见：
+前端：[SaltPlayerConverterFrontEnd](https://github.com/Winnie0408/SaltPlayerConverterFrontEnd)
+后端：[SaltPlayerConverterBackEnd](https://github.com/Winnie0408/SaltPlayerConverterBackEnd)
 
 ### 发送的统计数据
 
-- 当前电脑的唯一ID
-- 当前时间
+**不包含**您的任何隐私数据，仅包含以下信息：
+
+- 当前会话的Session ID（随机生成）
+- 开始转换的时间
+- 结束转换的时间
+- 匹配模式（总体/分离）
 - 歌单来源
 - 当前歌单包含的歌曲数量
 - 匹配成功的歌曲数
 - 自动匹配成功歌曲数量
 - 使用的相似度阈值
-- 是否启用括号去除
-- 发生转换冲突后：
-    - 您选择Y的歌曲数量
-    - 您选择N的歌曲数量
-    - 您手动输入歌曲信息的歌曲数量
-- 是否启用了“将本次选择应用于后续歌曲”
-    - 在第几首歌启用
-- 匹配总耗时
+- 括号去除是否启用
+- 歌手匹配是否启用
+- 专辑匹配是否启用
+- 最终保存了多少首歌曲
 
-### 括号内容去除
+### 匹配模式
+
+例如：
+
+歌单中歌曲的信息如下：
+
+歌名：小幸运
+
+歌手：田馥甄
+
+专辑：我的少女时代 电影原声带
+
+---
+
+本地歌曲的信息如下：
+
+歌名：小幸运
+
+歌手：田馥甄
+
+专辑：我的少女时代 电影原声大碟
+
+#### 总体匹配
+
+将歌曲的[歌名] [歌手] [专辑]拼接成一个字符串，进行匹配，找到相似度最大的歌曲。表格中将显示整体匹配的相似度。
+
+本匹配方法将使用：
+`小幸运田馥甄我的少女时代 电影原声带`与`小幸运田馥甄我的少女时代 电影原声大碟`进行匹配，相似度结果为：89.47%。
+
+#### 分离匹配
+
+将歌曲的[歌名] [歌手] [专辑]分别进行匹配， 找到相似度最大的歌曲。 表格中将显示每个匹配项的相似度。
+
+本匹配方法将分别使用：
+
+- `小幸运`与`小幸运`
+- `田馥甄`与`田馥甄`
+- `我的少女时代 电影原声带`与`我的少女时代 电影原声大碟`
+
+进行匹配，相似度结果分别为：
+
+- 100%
+- 100%
+- 84.62%
+
+### 括号去除
 
 大部分音乐平台对外语歌曲信息的命名方式一般为： `外文 (中文翻译)`或`外文 (歌曲来源、歌曲版本等)`。如`City Of Stars (From "La La Land" Soundtrack)`、`CALL ME BABY (叫我) (Chinese Ver.)`、`桜色舞うころ (樱花纷飞时)`。
 
@@ -335,9 +307,12 @@ java -jar [FileName].jar
 
 ## 赞助与支持
 
+🥰🥰🥰
+
 如果这个项目对您有所帮助，您可以给我一颗免费的⭐，或者请我喝杯咖啡！<br>
 非常感谢您的支持！ <br>
-<a  href="markdownResources/Alipay WeChatPay.jpg">
+⬇️⬇️⬇️<br>
+<a href="markdownResources/Alipay WeChatPay.jpg">
 <img src="markdownResources/Sponsorship.png" width = "150" height = "90" alt="Sponsorship.jpg" align=center />
 </a>
 

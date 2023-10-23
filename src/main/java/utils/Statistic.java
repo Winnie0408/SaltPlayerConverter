@@ -76,7 +76,7 @@ public class Statistic {
      * @param data 待发送的统计数据
      */
     private static void send(JSONObject data) {
-        String url = "https://dns.hwinzniej.top:46000/statistic/save";
+        String url = "https://saltconv.hwinzniej.top:46000/statistic/save";
         try {
             CloseableHttpClient httpClient = HttpClientBuilder.create().build();
             HttpPost httpPost = new HttpPost(url);
