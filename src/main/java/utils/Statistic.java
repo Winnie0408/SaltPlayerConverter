@@ -10,6 +10,8 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
@@ -66,6 +68,9 @@ public class Statistic {
             Properties prop = PropertiesRelated.read();
             String uuid = prop.getProperty("uuid");
             result.put("uuid", uuid);
+            result.put("mode", 1);
+            result.put("enableArtistNameMatch", true);
+            result.put("tool", "JavaSE");
             send(new JSONObject(result));
         }
     }
@@ -88,8 +93,6 @@ public class Statistic {
             CloseableHttpResponse response = httpClient.execute(httpPost);
             int statusCode = response.getStatusLine().getStatusCode();
             String responseBody = EntityUtils.toString(response.getEntity());
-//            Logger.info("状态码：" + statusCode);
-//            Logger.info("响应体：" + responseBody);
 
             response.close();
             httpClient.close();
@@ -99,6 +102,40 @@ public class Statistic {
                 Logger.error("统计数据发送失败！\n错误详情：" + responseBody);
         } catch (IOException e) {
             Logger.error("很抱歉！在发送统计数据时出现错误！\n错误详情：" + e);
+        }
+    }
+
+    public static void usage(String type) {
+        Properties prop = PropertiesRelated.read();
+        String uuid = prop.getProperty("uuid");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        String time = sdf.format(System.currentTimeMillis());
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("sessionId", uuid);
+        result.put("time", time);
+        result.put("type", type);
+        result.put("tool", "JavaSE");
+        sendUsage(new JSONObject(result));
+    }
+
+    private static void sendUsage(JSONObject data) {
+        String url = "https://saltconv.hwinzniej.top:46000/statistic/usage";
+        try {
+            CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+            HttpPost httpPost = new HttpPost(url);
+
+            StringEntity stringEntity = new StringEntity(data.toString(), StandardCharsets.UTF_8);
+            stringEntity.setContentType("application/json");
+            httpPost.setEntity(stringEntity);
+
+            CloseableHttpResponse response = httpClient.execute(httpPost);
+
+            response.close();
+            httpClient.close();
+        } catch (IOException ignored) {
         }
     }
 

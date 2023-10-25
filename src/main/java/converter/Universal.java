@@ -126,6 +126,9 @@ public class Universal {
             }
         }
         Logger.info("您选择了源格式为【" + SOURCE_CHN + "】的歌单");
+
+        Statistic.usage("Access");
+
         Sleep.start(500);
 
         //读取配置文件
@@ -283,6 +286,7 @@ public class Universal {
             System.out.println("\t歌单" + (i + 1) + ". 【" + playListName.get(i) + "】，包含" + songNum.get(playListId.get(i)) + "首歌曲");
         }
         System.out.println("请结合" + SOURCE_CHN + "APP中显示的歌单数据，检查以上歌单信息是否正确");
+        Statistic.usage("Uploaded");
 
         while (true) {
             System.out.print("""
@@ -397,6 +401,8 @@ public class Universal {
                     else
                         selectedPlayListId.poll(); //如果用户选择的歌单序号等于当前歌单序号，则弹出当前歌单序号
                 }
+
+                Statistic.usage("Save");
 
                 Statement stmt = conn.createStatement();
                 Statement stmt1 = conn.createStatement();
