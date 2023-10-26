@@ -136,7 +136,7 @@
 
 **（在电脑或其他中大屏设备上操作）**
 
-1. 进入[椒盐歌单助手](https://saltconv.hwinzniej.top:45999/)页面。
+1. 打开[椒盐歌单助手](https://saltconv.hwinzniej.top:45999/)页面。（或[使用其他运行项目的方法](README.md#项目的使用与运行)）
 2. 按照您的意愿，开启或关闭**允许发送统计数据**[（会发送哪些数据？）](README.md#发送的统计数据)，点击**开始**按钮。
 3. 选择**歌单来源**，点击下一步。
 4. 上传**本地音乐导出.txt**文件，点击下一步。
@@ -183,6 +183,44 @@
 前端：[SaltPlayerConverterFrontEnd](https://github.com/Winnie0408/SaltPlayerConverterFrontEnd)
 
 后端：[SaltPlayerConverterBackEnd](https://github.com/Winnie0408/SaltPlayerConverterBackEnd)
+
+#### 3. 自行使用Docker运行
+
+1. 运行命令，从Docker Hub拉取镜像
+
+**(推荐)**
+
+```bash
+docker run -d -it --shm-size=2G -p 45999:45999 -p 46000:46000 -e TZ=Asia/Shanghai -e LANG=zh_CN.UTF-8 --name salt-converter hwinzniej/salt-converter:latest /bin/bash /opt/init.sh
+```
+
+或
+
+```bash
+docker run -d -it --shm-size=2G --net=host -e TZ=Asia/Shanghai -e LANG=zh_CN.UTF-8 --name salt-converter hwinzniej/salt-converter:latest /bin/bash /opt/init.sh
+```
+
+2. 打开浏览器，访问
+
+```text
+http://127.0.0.1:45999/
+```
+
+---
+
+#### P.S.
+
+1. 若`45999`或/与`46000`端口被占用，可手动修改容器映射到宿主机的端口。如：修改为`55999`与`56000`：
+
+```bash
+docker run -d -it --shm-size=2G -p 55999:45999 -p 56000:46000 -e TZ=Asia/Shanghai -e LANG=zh_CN.UTF-8 --name salt-converter hwinzniej/salt-converter:latest /bin/bash /opt/init.sh
+```
+
+2. 若您的机器内存小于2G，可能需要修改共享内存的大小。如：改为`1G`：
+
+```bash
+docker run -d -it --shm-size=1G -p 45999:45999 -p 46000:46000 -e TZ=Asia/Shanghai -e LANG=zh_CN.UTF-8 --name salt-converter hwinzniej/salt-converter:latest /bin/bash /opt/init.sh
+```
 
 ### 发送的统计数据
 
