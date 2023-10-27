@@ -186,18 +186,18 @@
 
 #### 3. 自行使用Docker运行
 
-1. 运行命令，从Docker Hub拉取镜像
+1. 运行命令，从Docker Hub拉取镜像，使用镜像创建并运行容器
 
 **(推荐)**
 
 ```bash
-docker run -d -it --shm-size=2G -p 45999:45999 -p 46000:46000 -e TZ=Asia/Shanghai -e LANG=zh_CN.UTF-8 --name salt-converter hwinzniej/salt-converter:latest /bin/bash /opt/init.sh
+docker run -d -it --shm-size=2G -p 45999:45999 -p 46000:46000 -e TZ=Asia/Shanghai --name salt-converter hwinzniej/salt-converter:latest
 ```
 
 或
 
 ```bash
-docker run -d -it --shm-size=2G --net=host -e TZ=Asia/Shanghai -e LANG=zh_CN.UTF-8 --name salt-converter hwinzniej/salt-converter:latest /bin/bash /opt/init.sh
+docker run -d -it --shm-size=2G --net=host -e TZ=Asia/Shanghai --name salt-converter hwinzniej/salt-converter:latest
 ```
 
 2. 打开浏览器，访问
@@ -213,13 +213,25 @@ http://127.0.0.1:45999/
 1. 若`45999`或/与`46000`端口被占用，可手动修改容器映射到宿主机的端口。如：修改为`55999`与`56000`：
 
 ```bash
-docker run -d -it --shm-size=2G -p 55999:45999 -p 56000:46000 -e TZ=Asia/Shanghai -e LANG=zh_CN.UTF-8 --name salt-converter hwinzniej/salt-converter:latest /bin/bash /opt/init.sh
+docker run -d -it --shm-size=2G -p 55999:45999 -p 56000:46000 -e TZ=Asia/Shanghai --name salt-converter hwinzniej/salt-converter:latest
 ```
 
 2. 若您的机器内存小于2G，可能需要修改共享内存的大小。如：改为`1G`：
 
 ```bash
-docker run -d -it --shm-size=1G -p 45999:45999 -p 46000:46000 -e TZ=Asia/Shanghai -e LANG=zh_CN.UTF-8 --name salt-converter hwinzniej/salt-converter:latest /bin/bash /opt/init.sh
+docker run -d -it --shm-size=1G -p 45999:45999 -p 46000:46000 -e TZ=Asia/Shanghai --name salt-converter hwinzniej/salt-converter:latest
+```
+
+3. 若需要停止容器，可使用
+
+```bash
+docker stop salt-converter
+```
+
+4. 若需要启动容器，可使用
+
+```bash
+docker start salt-converter
 ```
 
 ### 发送的统计数据
