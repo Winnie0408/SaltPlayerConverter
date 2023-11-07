@@ -17,7 +17,9 @@
 
 ### 视频教程
 
-哔哩哔哩：[椒盐音乐 歌单助手 使用指北](https://www.bilibili.com/video/BV1Tw411s7aL/)
+~~哔哩哔哩（已被B站下线）：[椒盐音乐 歌单助手 使用指北](https://www.bilibili.com/video/BV1Tw411s7aL/)~~
+
+YouTube：[椒盐音乐 歌单助手 使用指北](https://youtu.be/w2UMsPFbOro)
 
 ### 需要使用的硬件与软件
 
