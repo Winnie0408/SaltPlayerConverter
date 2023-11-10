@@ -21,6 +21,8 @@
 
 YouTube：[椒盐音乐 歌单助手 使用指北](https://youtu.be/w2UMsPFbOro)
 
+酷友`@TianMiao8152`友情提供的（国内可访问）：[视频教程直链](https://www.tianmiao.fun/video/JY.mp4) 或 [视频教程在线播放](https://www.tianmiao.fun/posts/22023/)
+
 ### 需要使用的硬件与软件
 
 #### 硬件
