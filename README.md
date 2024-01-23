@@ -13,6 +13,7 @@
 - 原计划基于CLI实现，但由于Windows终端的编码问题，导致无法正常显示中文/韩文/日文等字符，所以现在改为使用前后端分离来实现。
 - 重构版 前端仓库：[SaltPlayerConverterFrontEnd](https://github.com/Winnie0408/SaltPlayerConverterFrontEnd)
 - 重构版 后端仓库：[SaltPlayerConverterBackEnd](https://github.com/Winnie0408/SaltPlayerConverterBackEnd)
+- **Android版 仓库：[歌单无界](https://github.com/Winnie0408/LocalMusicHelper) 于2024年1月23日正式上线啦！🎉🎉🎉**
 - 若您出于各种原因不太想使用前后端重构版，并能够使用Linux或者Mac OS系统，那么您可以使用CLI版，匹配的核心算法是相同的，详情请查看[CLI版README](README_CLI.md)。
 
 ### 视频教程
@@ -22,6 +23,8 @@
 YouTube：[椒盐音乐 歌单助手 使用指北](https://youtu.be/w2UMsPFbOro)
 
 酷友`@TianMiao8152`友情提供的（国内可访问）：[视频教程直链](https://www.tianmiao.fun/video/JY.mp4) 或 [视频教程在线播放](https://www.tianmiao.fun/posts/22023/)
+
+QQ群友`这是一个名字`友情提供的（国内可访问）：[视频教程直链](https://files.imgoss.top/videoplayback.mp4)
 
 ### 需要使用的硬件与软件
 
